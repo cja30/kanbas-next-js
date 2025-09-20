@@ -1,14 +1,10 @@
-export default function AssignmentEditor({
-  params,
-}: {
-  params: { cid: string; aid: string };
-}) {
-  const { cid, aid } = params;
+export default function AssignmentEditor(props: any) {
+  const { cid, aid } = (props?.params ?? {}) as { cid: string; aid: string };
 
   return (
     <div id="wd-assignments-editor">
       <h2>Course {cid}</h2>
-      <h3>Assignment Editor</h3>
+      <h3>Assignment Editor — {aid}</h3>
 
       <label htmlFor="wd-name">Assignment Name</label>
       <br />
