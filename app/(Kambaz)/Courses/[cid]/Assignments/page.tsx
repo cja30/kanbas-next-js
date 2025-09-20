@@ -1,11 +1,10 @@
 import Link from "next/link";
 
-export default function Assignments({
-  params,
-}: {
-  params: { cid: string };
-}) {
-  const { cid } = params;
+type AssignmentsParams = { cid: string };
+type AssignmentsProps = { params: AssignmentsParams };
+
+export default function Assignments(input: unknown) {
+  const { cid } = (input as AssignmentsProps).params;
 
   return (
     <div id="wd-assignments">
