@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
-export default function CoursesPage({
-  params,
-}: { params: { cid: string } }) {
-  const { cid } = params;
+type CoursesPageInput = { params: { cid: string } };
+
+export default function CoursesPage(input: unknown) {
+  const { cid } = (input as CoursesPageInput).params;
   redirect(`/Courses/${cid}/Home`);
 }
