@@ -1,5 +1,8 @@
-export default function AssignmentEditor(props: any) {
-  const { cid, aid } = (props?.params ?? {}) as { cid: string; aid: string };
+type AssignmentParams = { cid: string; aid: string };
+type AssignmentProps = { params: AssignmentParams };
+
+export default function AssignmentEditor(input: unknown) {
+  const { cid, aid } = (input as AssignmentProps).params;
 
   return (
     <div id="wd-assignments-editor">
