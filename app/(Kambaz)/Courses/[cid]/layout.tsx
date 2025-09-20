@@ -1,10 +1,13 @@
 import { ReactNode } from "react";
 import CourseNavigation from "./Navigation";
 
-export default function CoursesLayout({
-  children,
-  params,
-}: Readonly<{ children: ReactNode; params: { cid: string } }>) {
+type CoursesLayoutInput = {
+  children: ReactNode;
+  params: { cid: string };
+};
+
+export default function CoursesLayout(input: unknown) {
+  const { children, params } = input as CoursesLayoutInput;
   const { cid } = params;
 
   return (
@@ -17,9 +20,7 @@ export default function CoursesLayout({
             <td valign="top" width="200">
               <CourseNavigation cid={cid} />
             </td>
-            <td valign="top" width="100%">
-              {children}
-            </td>
+            <td valign="top" width="100%">{children}</td>
           </tr>
         </tbody>
       </table>
