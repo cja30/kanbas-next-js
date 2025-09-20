@@ -23,4 +23,3 @@ export default function TOC() {
          Kambaz </Link> </li>
    </ul> 
 );}
-
