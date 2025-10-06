@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import "./index.css";
 import ForegroundColors from "./ForegroundColors";
 import BackgroundColors from "./BackgroundColors";
