@@ -4,19 +4,25 @@ import Button from "react-bootstrap/Button";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
 import ListGroup from "react-bootstrap/ListGroup";
-import ListGroupItem from "react-bootstrap/ListGroupItem";
 import Badge from "react-bootstrap/Badge";
 
 import { FaSearch, FaPlus, FaCheckCircle } from "react-icons/fa";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { BsGripVertical } from "react-icons/bs";
 
-type Props = { params: { cid: string } };
+type RouteParams = { cid: string };
 
-export default function Assignments({ params: { cid } }: Props) {
+export default async function Assignments({
+  params,
+}: {
+  params: Promise<RouteParams>;
+}) {
+
+  const { cid } = await params;
+
   const items = [
-    { id: "123", title: "A1 – ENV + HTML", avail: "May 6 at 12:00am", due: "May 13 at 11:59pm", pts: 100 },
-    { id: "124", title: "A2 – CSS + BOOTSTRAP", avail: "May 13 at 12:00am", due: "May 20 at 11:59pm", pts: 100 },
+    { id: "123", title: "A1 – ENV + HTML",         avail: "May 6 at 12:00am",  due: "May 13 at 11:59pm", pts: 100 },
+    { id: "124", title: "A2 – CSS + BOOTSTRAP",    avail: "May 13 at 12:00am", due: "May 20 at 11:59pm", pts: 100 },
     { id: "125", title: "A3 – JAVASCRIPT + REACT", avail: "May 20 at 12:00am", due: "May 27 at 11:59pm", pts: 100 },
   ];
 
@@ -40,7 +46,7 @@ export default function Assignments({ params: { cid } }: Props) {
       </div>
 
       <ListGroup className="rounded-0">
-        <ListGroupItem className="p-0 mb-3 border-gray">
+        <ListGroup.Item className="p-0 mb-3 border-gray">
           <div className="d-flex align-items-center justify-content-between p-3 bg-secondary">
             <div className="d-flex align-items-center">
               <BsGripVertical className="me-2 fs-4" />
@@ -55,18 +61,22 @@ export default function Assignments({ params: { cid } }: Props) {
 
           <ListGroup variant="flush" className="rounded-0">
             {items.map((a) => (
-              <ListGroupItem key={a.id} className="wd-assignment-item p-3 ps-2">
+              <ListGroup.Item key={a.id} className="wd-assignment-item p-3 ps-2">
                 <div className="d-flex">
                   <BsGripVertical className="me-3 fs-5 text-muted" />
                   <div className="flex-fill">
-                    <Link href={`/Courses/${cid}/Assignments/${a.id}`} className="text-decoration-none">
+                    <Link
+                      href={`/Courses/${cid}/Assignments/${a.id}`}
+                      className="text-decoration-none"
+                    >
                       <div className="fw-semibold text-primary">{a.title}</div>
                     </Link>
                     <div className="small text-muted">
                       Multiple Modules <span className="mx-2">|</span>
                       <strong>Not available until</strong> {a.avail} <span className="mx-2">|</span>
                       <br className="d-md-none" />
-                      <strong>Due</strong> {a.due} <span className="mx-2">|</span>{a.pts} pts
+                      <strong>Due</strong> {a.due} <span className="mx-2">|</span>
+                      {a.pts} pts
                     </div>
                   </div>
                   <div className="d-flex align-items-center ms-3">
@@ -74,10 +84,10 @@ export default function Assignments({ params: { cid } }: Props) {
                     <IoEllipsisVertical className="fs-4" />
                   </div>
                 </div>
-              </ListGroupItem>
+              </ListGroup.Item>
             ))}
           </ListGroup>
-        </ListGroupItem>
+        </ListGroup.Item>
       </ListGroup>
     </div>
   );

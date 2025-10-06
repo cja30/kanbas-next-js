@@ -1,5 +1,3 @@
-'use client';
-
 import Link from "next/link";
 
 import Button from "react-bootstrap/Button";
@@ -13,9 +11,15 @@ import FormControl from "react-bootstrap/FormControl";
 import FormSelect from "react-bootstrap/FormSelect";
 import FormCheck from "react-bootstrap/FormCheck";
 
-type Props = { params: { cid: string; aid: string } };
+type RouteParams = { cid: string; aid: string };
 
-export default function AssignmentEditor({ params: { cid, aid } }: Props) {
+export default async function AssignmentEditor({
+  params,
+}: {
+  params: Promise<RouteParams>;
+}) {
+  const { cid, aid } = await params;
+
   return (
     <div id="wd-assignment-editor" className="p-3 pe-3">
       <h2 className="h4 mb-4">Assignment {aid}</h2>
