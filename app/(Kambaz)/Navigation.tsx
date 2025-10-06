@@ -1,51 +1,74 @@
-"use client";
+'use client';
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ListGroup } from "react-bootstrap";
-import { FaRegCircleUser, FaInbox } from "react-icons/fa6";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { IoCalendarOutline } from "react-icons/io5";
 import { LiaBookSolid, LiaCogSolid } from "react-icons/lia";
+import { FaInbox, FaRegCircleUser } from "react-icons/fa6";
+import { ListGroup, ListGroupItem } from "react-bootstrap";
 
-const LINKS = [
-  { href: "/Account",  id: "wd-account-link",   label: "Account",   icon: <FaRegCircleUser className="fs-1 text-white" />, forceWhiteIcon: true },
-  { href: "/Dashboard",id: "wd-dashboard-link", label: "Dashboard", icon: <AiOutlineDashboard className="fs-1" /> },
-  { href: "/Inbox",    id: "wd-inbox-link",     label: "Inbox",     icon: <FaInbox className="fs-1" /> },
-  { href: "/Calendar", id: "wd-calendar-link",  label: "Calendar",  icon: <IoCalendarOutline className="fs-1" /> },
-  { href: "/Courses/1234/Home", id: "wd-courses-link", label: "Courses", icon: <LiaBookSolid className="fs-1" /> },
-  { href: "/Settings", id: "wd-settings-link",  label: "Settings",  icon: <LiaCogSolid className="fs-1" /> },
-];
+type Item = {
+  href: string;
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+};
 
 export default function KambazNavigation() {
-  const pathname = usePathname();
+  const pathname = usePathname() || "/";
+
+  const items: Item[] = [
+    { href: "/Account",   id: "wd-account-link",   label: "Account",   icon: <FaRegCircleUser className="fs-1 text-white" /> },
+    { href: "/Dashboard", id: "wd-dashboard-link", label: "Dashboard", icon: <AiOutlineDashboard className="fs-1 text-danger" /> },
+    { href: "/Calendar",  id: "wd-calendar-link",  label: "Calendar",  icon: <IoCalendarOutline className="fs-1 text-danger" /> },
+    { href: "/Inbox",     id: "wd-inbox-link",     label: "Inbox",     icon: <FaInbox className="fs-1 text-danger" /> },
+    { href: "/Courses",   id: "wd-courses-link",   label: "Courses",   icon: <LiaBookSolid className="fs-1 text-danger" /> },
+    { href: "/Settings",  id: "wd-settings-link",  label: "Settings",  icon: <LiaCogSolid className="fs-1 text-danger" /> },
+  ];
+
   const isActive = (href: string) =>
-    pathname === href || (href.startsWith("/Courses") && pathname.startsWith("/Courses"));
+    pathname === href || pathname.startsWith(href + "/");
 
   return (
     <ListGroup
       id="wd-kambaz-navigation"
       className="rounded-0 position-fixed bottom-0 top-0 d-none d-md-block bg-black z-2 text-center"
-      style={{ width: 120 }}
+      style={{ width: 110 }}
     >
-      <div className="bg-black border-0 text-center py-3">
-        <a id="wd-neu-link" href="https://www.northeastern.edu/" target="_blank" rel="noreferrer">
-          <img src="/images/NEU.png" width="75" alt="Northeastern University" />
+      <ListGroupItem className="bg-black border-0">
+        <a
+          className="d-inline-block"
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://www.northeastern.edu/"
+          id="wd-neu-link"
+        >
+          <img src="/images/NEU.svg" width="75" alt="Northeastern University" />
         </a>
-      </div>
+      </ListGroupItem>
 
-      {LINKS.map(({ href, id, label, icon, forceWhiteIcon }) => {
-        const active = isActive(href);
-        const bg = active ? "bg-white" : "bg-black";
-        const text = active ? "text-danger" : "text-white";
-        const iconColor = forceWhiteIcon ? "text-white" : active ? "text-danger" : "text-danger";
+      {items.map((it) => {
+        const active = isActive(it.href);
+        const base =
+          "border-0 text-center rounded-0 text-decoration-none";
+        const className = active
+          ? `bg-white ${base}`
+          : `bg-black ${base}`;
+
+        const textClass = active ? "text-danger" : "text-white";
+
         return (
-          <div key={id} className={`${bg} border-0 py-3 d-block`}>
-            <Link href={href} id={id} className={`${text} text-decoration-none`}>
-              <div className={`${iconColor}`}>{icon}</div>
-              <div className="small mt-1">{label}</div>
+          <ListGroupItem key={it.id} className={className}>
+            <Link href={it.href} id={it.id} className={`${textClass} text-decoration-none`}>
+              <div className="d-flex flex-column align-items-center">
+                {it.label === "Account"
+                  ? <FaRegCircleUser className="fs-1 text-white" />
+                  : it.icon}
+                <small className={`${textClass}`}>{it.label}</small>
+              </div>
             </Link>
-          </div>
+          </ListGroupItem>
         );
       })}
     </ListGroup>

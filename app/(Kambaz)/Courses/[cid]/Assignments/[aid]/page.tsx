@@ -1,143 +1,136 @@
-type AssignmentParams = { cid: string; aid: string };
-type AssignmentProps = { params: AssignmentParams };
+'use client';
 
-export default function AssignmentEditor(input: unknown) {
-  const { cid, aid } = (input as AssignmentProps).params;
+import Link from "next/link";
 
+import Button from "react-bootstrap/Button";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+
+import Form from "react-bootstrap/Form";
+import FormGroup from "react-bootstrap/FormGroup";
+import FormLabel from "react-bootstrap/FormLabel";
+import FormControl from "react-bootstrap/FormControl";
+import FormSelect from "react-bootstrap/FormSelect";
+import FormCheck from "react-bootstrap/FormCheck";
+
+type Props = { params: { cid: string; aid: string } };
+
+export default function AssignmentEditor({ params: { cid, aid } }: Props) {
   return (
-    <div id="wd-assignments-editor">
-      <h2>Course {cid}</h2>
-      <h3>Assignment Editor — {aid}</h3>
+    <div id="wd-assignment-editor" className="p-3 pe-3">
+      <h2 className="h4 mb-4">Assignment {aid}</h2>
 
-      <label htmlFor="wd-name">Assignment Name</label>
-      <br />
-      <input id="wd-name" defaultValue="A1 - ENV + HTML" />
-      <br />
-      <br />
+      <Form>
+        <FormGroup className="mb-3" controlId="wd-assignment-name">
+          <FormLabel className="fw-semibold">Assignment Name</FormLabel>
+          <FormControl defaultValue={`A${aid?.slice?.(-1) ?? "1"}`} />
+        </FormGroup>
 
-      <textarea id="wd-description" rows={8} cols={60} defaultValue={``} />
-      <br />
+        <FormGroup className="mb-4" controlId="wd-assignment-instructions">
+          <FormLabel className="fw-semibold">Instructions</FormLabel>
+          <FormControl
+            as="textarea"
+            rows={8}
+            defaultValue={`Submit a link to your Kanbas app deployed on Netlify.
 
-      <table>
-        <tbody>
-          <tr>
-            <td align="right" valign="top">
-              <label htmlFor="wd-points">Points</label>
-            </td>
-            <td>
-              <input id="wd-points" defaultValue={100} />
-            </td>
-          </tr>
+Include:
+• Your full name and section
+• Links to each lab assignment
+• Link to the Kanbas application
+• Links to relevant source repositories`}
+          />
+        </FormGroup>
 
-          <tr>
-            <td align="right" valign="top">
-              <label htmlFor="wd-group">Assignment Group</label>
-            </td>
-            <td>
-              <select id="wd-group" defaultValue="ASSIGNMENTS">
-                <option value="ASSIGNMENTS">ASSIGNMENTS</option>
-                <option value="QUIZZES">QUIZZES</option>
-                <option value="EXAMS">EXAMS</option>
-                <option value="PROJECT">PROJECT</option>
-              </select>
-            </td>
-          </tr>
+        <Row className="mb-3">
+          <Col md={4}>
+            <FormGroup controlId="wd-assignment-points">
+              <FormLabel className="fw-semibold">Points</FormLabel>
+              <FormControl type="number" defaultValue={100} />
+            </FormGroup>
+          </Col>
+          <Col md={8}>
+            <FormGroup controlId="wd-assignment-group">
+              <FormLabel className="fw-semibold">Assignment Group</FormLabel>
+              <FormSelect defaultValue="ASSIGNMENTS">
+                <option>ASSIGNMENTS</option>
+                <option>QUIZZES</option>
+                <option>PROJECTS</option>
+              </FormSelect>
+            </FormGroup>
+          </Col>
+        </Row>
 
-          <tr>
-            <td align="right" valign="top">
-              <label htmlFor="wd-display-grade-as">Display Grade as</label>
-            </td>
-            <td>
-              <select id="wd-display-grade-as" defaultValue="PERCENTAGE">
-                <option value="PERCENTAGE">Percentage</option>
-                <option value="POINTS">Points</option>
-                <option value="LETTER">Letter Grade</option>
-                <option value="COMPLETE">Complete/Incomplete</option>
-              </select>
-            </td>
-          </tr>
+        <Row className="mb-3">
+          <Col md={6}>
+            <FormGroup controlId="wd-display-grade-as">
+              <FormLabel className="fw-semibold">Display Grade as</FormLabel>
+              <FormSelect defaultValue="Percentage">
+                <option>Percentage</option>
+                <option>Points</option>
+                <option>Complete/Incomplete</option>
+              </FormSelect>
+            </FormGroup>
+          </Col>
+          <Col md={6}>
+            <FormGroup controlId="wd-submission-type">
+              <FormLabel className="fw-semibold">Submission Type</FormLabel>
+              <FormSelect defaultValue="Online">
+                <option>Online</option>
+                <option>On Paper</option>
+                <option>No Submission</option>
+              </FormSelect>
+            </FormGroup>
+          </Col>
+        </Row>
 
-          <tr>
-            <td align="right" valign="top">
-              <label htmlFor="wd-submission-type">Submission Type</label>
-            </td>
-            <td>
-              <select id="wd-submission-type" defaultValue="ONLINE">
-                <option value="ONLINE">Online</option>
-                <option value="ON_PAPER">On Paper</option>
-                <option value="NONE">No Submission</option>
-              </select>
+        <FormGroup className="mb-4" controlId="wd-online-entry-options">
+          <FormLabel className="fw-semibold">Online Entry Options</FormLabel>
+          <div>
+            <FormCheck type="checkbox" label="Text Entry" />
+            <FormCheck type="checkbox" label="Website URL" defaultChecked />
+            <FormCheck type="checkbox" label="Media Recordings" />
+            <FormCheck type="checkbox" label="Student Annotation" />
+            <FormCheck type="checkbox" label="File Uploads" />
+          </div>
+        </FormGroup>
 
-              <div style={{ marginTop: 8 }}>
-                <b>Online Entry Options</b>
-                <div>
-                  <input id="wd-text-entry" type="checkbox" />{" "}
-                  <label htmlFor="wd-text-entry">Text Entry</label>
-                </div>
-                <div>
-                  <input id="wd-website-url" type="checkbox" />{" "}
-                  <label htmlFor="wd-website-url">Website URL</label>
-                </div>
-                <div>
-                  <input id="wd-media-recordings" type="checkbox" />{" "}
-                  <label htmlFor="wd-media-recordings">Media Recordings</label>
-                </div>
-                <div>
-                  <input id="wd-student-annotation" type="checkbox" />{" "}
-                  <label htmlFor="wd-student-annotation">Student Annotation</label>
-                </div>
-                <div>
-                  <input id="wd-file-upload" type="checkbox" />{" "}
-                  <label htmlFor="wd-file-upload">File Uploads</label>
-                </div>
-              </div>
-            </td>
-          </tr>
+        <Row className="mb-3">
+          <Col md={12}>
+            <FormGroup controlId="wd-assign-to">
+              <FormLabel className="fw-semibold">Assign to</FormLabel>
+              <FormControl defaultValue="Everyone" />
+            </FormGroup>
+          </Col>
+        </Row>
 
-          <tr>
-            <td align="right" valign="top">
-              <label htmlFor="wd-assign-to">Assign</label>
-            </td>
-            <td>
-              <input id="wd-assign-to" defaultValue="Everyone" />
-            </td>
-          </tr>
+        <Row className="mb-4">
+          <Col md={6}>
+            <FormGroup controlId="wd-due">
+              <FormLabel className="fw-semibold">Due</FormLabel>
+              <FormControl type="datetime-local" defaultValue="2024-05-13T23:59" />
+            </FormGroup>
+          </Col>
+          <Col md={3}>
+            <FormGroup controlId="wd-available-from">
+              <FormLabel className="fw-semibold">Available from</FormLabel>
+              <FormControl type="datetime-local" defaultValue="2024-05-06T12:00" />
+            </FormGroup>
+          </Col>
+          <Col md={3}>
+            <FormGroup controlId="wd-until">
+              <FormLabel className="fw-semibold">Until</FormLabel>
+              <FormControl type="datetime-local" />
+            </FormGroup>
+          </Col>
+        </Row>
 
-          <tr>
-            <td align="right">
-              <label htmlFor="wd-due-date">Due</label>
-            </td>
-            <td>
-              <input id="wd-due-date" type="date" defaultValue="2024-05-13" />
-            </td>
-          </tr>
-
-          <tr>
-            <td align="right">
-              <label htmlFor="wd-available-from">Available from</label>
-            </td>
-            <td>
-              <input
-                id="wd-available-from"
-                type="date"
-                defaultValue="2024-05-06"
-              />{" "}
-              <label htmlFor="wd-available-until" style={{ marginLeft: 12 }}>
-                Until
-              </label>{" "}
-              <input
-                id="wd-available-until"
-                type="date"
-                defaultValue="2024-05-20"
-              />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div style={{ marginTop: 12 }}>
-        <button>Cancel</button> <button>Save</button>
-      </div>
+        <div className="d-flex justify-content-end gap-2">
+          <Link href={`/Courses/${cid}/Assignments`} className="btn btn-light">
+            Cancel
+          </Link>
+          <Button variant="danger">Save</Button>
+        </div>
+      </Form>
     </div>
   );
 }

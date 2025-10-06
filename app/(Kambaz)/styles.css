@@ -14,3 +14,50 @@ body * {
   }
 }
 
+#wd-dashboard #wd-dashboard-courses .wd-courses-row {
+  --bs-gutter-x: 2rem; 
+  --bs-gutter-y: 2rem;
+}
+
+#wd-dashboard {
+  padding-right: 12px;
+}
+
+.list-group.wd > .list-group-item.active {
+  color: black;
+  background-color: white;
+  border-left: 3px solid black !important;
+}
+
+.btn-secondary {
+  --bs-btn-color: #000 !important;
+  --bs-btn-bg: #c7cdd1 !important;
+  --bs-btn-border-color: #c7cdd1 !important;
+  --bs-btn-hover-color: #fff !important;
+}
+
+.bg-secondary { --bs-secondary-rgb: 199, 205, 209; }
+
+.list-group-item { --bs-list-group-border-color: gray; }
+
+.wd-lesson { border-left: 3px solid green !important; }
+
+.border-gray { border: 1px solid gray !important; }
+
+.list-group.wd > .list-group-item.active {
+  color: black;
+  background-color: white;
+  border-left: 3px solid black !important;
+}
+
+.border-gray {
+  border: 1px solid #d0d0d0 !important;
+}
+
+#wd-assignments .wd-assignment-item {
+  border-left: 3px solid green !important;
+}
+
+#wd-assignments .list-group-item {
+  --bs-list-group-border-color: #dee2e6;
+}
