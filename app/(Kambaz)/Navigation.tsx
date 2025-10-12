@@ -19,11 +19,16 @@ export default function KambazNavigation() {
   const pathname = usePathname() || "/";
 
   const items: Item[] = [
+    { href: "/",          id: "wd-home-link",      label: "Home",      icon: <AiOutlineDashboard className="fs-1 text-danger" /> },
+
     { href: "/Account",   id: "wd-account-link",   label: "Account",   icon: <FaRegCircleUser className="fs-1 text-white" /> },
     { href: "/Dashboard", id: "wd-dashboard-link", label: "Dashboard", icon: <AiOutlineDashboard className="fs-1 text-danger" /> },
     { href: "/Calendar",  id: "wd-calendar-link",  label: "Calendar",  icon: <IoCalendarOutline className="fs-1 text-danger" /> },
     { href: "/Inbox",     id: "wd-inbox-link",     label: "Inbox",     icon: <FaInbox className="fs-1 text-danger" /> },
     { href: "/Courses",   id: "wd-courses-link",   label: "Courses",   icon: <LiaBookSolid className="fs-1 text-danger" /> },
+    
+    { href: "/Labs",      id: "wd-labs-link",      label: "Labs",      icon: <LiaBookSolid className="fs-1 text-danger" /> },
+
     { href: "/Settings",  id: "wd-settings-link",  label: "Settings",  icon: <LiaCogSolid className="fs-1 text-danger" /> },
   ];
 
@@ -50,22 +55,19 @@ export default function KambazNavigation() {
 
       {items.map((it) => {
         const active = isActive(it.href);
-        const base =
-          "border-0 text-center rounded-0 text-decoration-none";
-        const className = active
-          ? `bg-white ${base}`
-          : `bg-black ${base}`;
-
+        const base = "border-0 text-center rounded-0 text-decoration-none";
+        const className = active ? `bg-white ${base}` : `bg-black ${base}`;
         const textClass = active ? "text-danger" : "text-white";
 
         return (
           <ListGroupItem key={it.id} className={className}>
             <Link href={it.href} id={it.id} className={`${textClass} text-decoration-none`}>
               <div className="d-flex flex-column align-items-center">
+                {/* Keep Account icon white to match rubric */}
                 {it.label === "Account"
                   ? <FaRegCircleUser className="fs-1 text-white" />
                   : it.icon}
-                <small className={`${textClass}`}>{it.label}</small>
+                <small className={textClass}>{it.label}</small>
               </div>
             </Link>
           </ListGroupItem>
