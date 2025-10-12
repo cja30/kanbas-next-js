@@ -22,7 +22,7 @@ export default function Lab1() {
         <h4>Kambaz Application</h4>
         <p>
           <a
-            href="https://kanbas-next-js-beta.vercel.app/Account/Signin"
+            href="https://kanbas-next-jsa2.vercel.app/Account/Signin"
             id="wd-kambaz-link"
             target="_blank"
             rel="noreferrer"
