@@ -19,14 +19,12 @@ export default function KambazNavigation() {
   const pathname = usePathname() || "/";
 
   const items: Item[] = [
-    { href: "/",          id: "wd-home-link",      label: "Home",      icon: <AiOutlineDashboard className="fs-1 text-danger" /> },
-
     { href: "/Account",   id: "wd-account-link",   label: "Account",   icon: <FaRegCircleUser className="fs-1 text-white" /> },
     { href: "/Dashboard", id: "wd-dashboard-link", label: "Dashboard", icon: <AiOutlineDashboard className="fs-1 text-danger" /> },
     { href: "/Calendar",  id: "wd-calendar-link",  label: "Calendar",  icon: <IoCalendarOutline className="fs-1 text-danger" /> },
     { href: "/Inbox",     id: "wd-inbox-link",     label: "Inbox",     icon: <FaInbox className="fs-1 text-danger" /> },
     { href: "/Courses",   id: "wd-courses-link",   label: "Courses",   icon: <LiaBookSolid className="fs-1 text-danger" /> },
-    
+
     { href: "/Labs",      id: "wd-labs-link",      label: "Labs",      icon: <LiaBookSolid className="fs-1 text-danger" /> },
 
     { href: "/Settings",  id: "wd-settings-link",  label: "Settings",  icon: <LiaCogSolid className="fs-1 text-danger" /> },
