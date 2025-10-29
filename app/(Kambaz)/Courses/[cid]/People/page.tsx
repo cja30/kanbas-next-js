@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 
-export default function PeopleIndex({
+export default async function PeopleIndex({
   params,
 }: {
-  params: { cid: string };
+  params: Promise<{ cid: string }>;
 }) {
-  redirect(`/Courses/${params.cid}/People/Table`);
+  const { cid } = await params;
+  redirect(`/Courses/${cid}/People/Table`);
 }
