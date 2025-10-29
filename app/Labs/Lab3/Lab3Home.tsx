@@ -58,7 +58,7 @@ export default function Lab3() {
       <FilterFunction/>
       <JsonStringify/>
       <House/>
-      <TodoItem/>
+      <TodoItem todo={{ done: true, title: "Buy milk", status: "COMPLETED" }} />
       <TodoList/>
       <Spreading/>
       <Destructing/>
