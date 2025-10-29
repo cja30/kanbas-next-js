@@ -1,7 +1,14 @@
+import { ReactNode } from "react";
 import { FaAlignJustify } from "react-icons/fa6";
 import CourseNavigation from "./Navigation";
 
-export default function CourseLayout({ children, params }: any) {
+export default function CourseLayout({
+  children,
+  params,
+}: {
+  children: ReactNode;
+  params: { cid: string };
+}) {
   const { cid } = params;
 
   return (
