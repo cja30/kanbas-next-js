@@ -1,17 +1,40 @@
 "use client";
 
+"use client";
+
 import { Table } from "react-bootstrap";
 import { FaUserCircle } from "react-icons/fa";
 import { useParams } from "next/navigation";
 import * as db from "../../../../Database";
 
+type User = {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  loginId: string;
+  section: string;
+  role: string;
+  lastActivity?: string;
+  totalActivity?: string;
+};
+
+type Enrollment = {
+  user: string;
+  course: string;
+};
+
 export default function PeopleTable() {
   const { cid } = useParams<{ cid: string }>();
 
-  const { users, enrollments } = db;
+  const { users, enrollments } = db as {
+    users: User[];
+    enrollments: Enrollment[];
+  };
 
-  const courseUsers = users.filter((usr: any) =>
-    enrollments.some((enr: any) => enr.user === usr._id && enr.course === cid)
+  const courseUsers: User[] = users.filter((usr: User) =>
+    enrollments.some(
+      (enr: Enrollment) => enr.user === usr._id && enr.course === cid
+    )
   );
 
   return (
@@ -28,7 +51,7 @@ export default function PeopleTable() {
           </tr>
         </thead>
         <tbody>
-          {courseUsers.map((user: any) => (
+          {courseUsers.map((user) => (
             <tr key={user._id}>
               <td className="wd-full-name text-nowrap">
                 <FaUserCircle className="me-2 fs-1 text-secondary" />
@@ -45,7 +68,9 @@ export default function PeopleTable() {
 
           {courseUsers.length === 0 && (
             <tr>
-              <td colSpan={6} className="text-muted">No people enrolled for this course.</td>
+              <td colSpan={6} className="text-muted">
+                No people enrolled for this course.
+              </td>
             </tr>
           )}
         </tbody>

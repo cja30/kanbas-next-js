@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import * as db from "../../../Database"; 
+import * as db from "../../../Database";
 
 import {
   ListGroup,
@@ -13,15 +13,31 @@ import ModulesControls from "./ModulesControls";
 import LessonControlButtons from "./LessonControlButtons";
 import ModuleControlButtons from "./ModuleControlButtons";
 
+type Lesson = {
+  _id: string;
+  name: string;
+};
+
+type Module = {
+  _id: string;
+  name: string;
+  course: string;
+  lessons?: Lesson[];
+};
+
 export default function Modules() {
   const { cid } = useParams<{ cid: string }>();
-
-  const modules = (db.modules ?? []).filter((m: any) => m.course === cid);
+  const modules: Module[] = (db.modules ?? []).filter(
+    (m: Module) => m.course === cid
+  );
 
   return (
     <div id="wd-modules-page">
       <ModulesControls />
-      <br /><br /><br /><br />
+      <br />
+      <br />
+      <br />
+      <br />
 
       <ListGroup id="wd-modules" className="rounded-0">
         {modules.length === 0 && (
@@ -30,12 +46,12 @@ export default function Modules() {
           </ListGroupItem>
         )}
 
-        {modules.map((module: any) => (
+        {modules.map((module) => (
           <ListGroupItem
             key={module._id ?? module.name}
             className="wd-module p-0 mb-5 fs-5 border-gray"
           >
-          
+            {/* Module header */}
             <div className="wd-title p-3 ps-2 bg-secondary d-flex align-items-center justify-content-between">
               <div className="d-flex align-items-center">
                 <BsGripVertical className="me-2 fs-3" />
@@ -46,7 +62,7 @@ export default function Modules() {
 
             {Array.isArray(module.lessons) && module.lessons.length > 0 && (
               <ListGroup className="wd-lessons rounded-0">
-                {module.lessons.map((lesson: any) => (
+                {module.lessons.map((lesson) => (
                   <ListGroupItem
                     key={lesson._id ?? `${module._id}-${lesson.name}`}
                     className="wd-lesson p-3 ps-1 d-flex align-items-center justify-content-between"
