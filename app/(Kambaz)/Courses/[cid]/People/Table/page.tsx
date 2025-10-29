@@ -1,7 +1,5 @@
 "use client";
 
-"use client";
-
 import { Table } from "react-bootstrap";
 import { FaUserCircle } from "react-icons/fa";
 import { useParams } from "next/navigation";
