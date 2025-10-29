@@ -1,10 +1,10 @@
-let numberVariable = 123;
-let floatingPointNumber = 234.345;
-let stringVariable = 'Hello World!';
-let booleanVariable = true;
-let isNumber = typeof numberVariable;
-let isString = typeof stringVariable;
-let isBoolean = typeof booleanVariable;
+const numberVariable = 123;
+const floatingPointNumber = 234.345;
+const stringVariable = "Hello World!";
+const booleanVariable = true;
+const isNumber = typeof numberVariable === "number";
+const isString = typeof stringVariable === "string";
+const isBoolean = typeof booleanVariable === "boolean";
 
 export default function VariableTypes() {
   return(
