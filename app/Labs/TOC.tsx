@@ -27,7 +27,7 @@ export default function TOC() {
         </NavLink>
       </NavItem>
       <NavItem>
-        <NavLink as={Link} href="/Kambaz" id="wd-a4">
+        <NavLink as={Link} href="/Account/Signin" id="wd-a4">
           Kambaz
         </NavLink>
       </NavItem>

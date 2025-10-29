@@ -1,3 +1,5 @@
-export default function People() {
-  return <h2>People</h2>;
+import { redirect } from "next/navigation";
+
+export default function PeopleIndex({ params }: { params: { cid: string } }) {
+  redirect(`/Courses/${params.cid}/People/Table`);
 }

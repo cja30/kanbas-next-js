@@ -1,76 +1,65 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ListGroup, ListGroupItem } from "react-bootstrap";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { IoCalendarOutline } from "react-icons/io5";
 import { LiaBookSolid, LiaCogSolid } from "react-icons/lia";
 import { FaInbox, FaRegCircleUser } from "react-icons/fa6";
-import { ListGroup, ListGroupItem } from "react-bootstrap";
-
-type Item = {
-  href: string;
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-};
 
 export default function KambazNavigation() {
-  const pathname = usePathname() || "/";
+  const pathname = usePathname() || "/Kambaz";
 
-  const items: Item[] = [
-    { href: "/Account",   id: "wd-account-link",   label: "Account",   icon: <FaRegCircleUser className="fs-1 text-white" /> },
-    { href: "/Dashboard", id: "wd-dashboard-link", label: "Dashboard", icon: <AiOutlineDashboard className="fs-1 text-danger" /> },
-    { href: "/Calendar",  id: "wd-calendar-link",  label: "Calendar",  icon: <IoCalendarOutline className="fs-1 text-danger" /> },
-    { href: "/Inbox",     id: "wd-inbox-link",     label: "Inbox",     icon: <FaInbox className="fs-1 text-danger" /> },
-    { href: "/Courses",   id: "wd-courses-link",   label: "Courses",   icon: <LiaBookSolid className="fs-1 text-danger" /> },
-
-    { href: "/Labs",      id: "wd-labs-link",      label: "Labs",      icon: <LiaBookSolid className="fs-1 text-danger" /> },
-
-    { href: "/Settings",  id: "wd-settings-link",  label: "Settings",  icon: <LiaCogSolid className="fs-1 text-danger" /> },
+  const links = [
+    { label: "Dashboard", path: "/Dashboard", icon: AiOutlineDashboard },
+    { label: "Courses",   path: "/Dashboard", icon: LiaBookSolid },
+    { label: "Calendar",  path: "/Calendar",  icon: IoCalendarOutline },
+    { label: "Inbox",     path: "/Inbox",     icon: FaInbox },
   ];
 
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(href + "/");
+  const isActive = (p: string) => pathname === p || pathname.startsWith(p + "/");
+  const isAccount = pathname.startsWith("/Kambaz/Account");
 
   return (
-    <ListGroup
-      id="wd-kambaz-navigation"
-      className="rounded-0 position-fixed bottom-0 top-0 d-none d-md-block bg-black z-2 text-center"
-      style={{ width: 110 }}
-    >
+    <ListGroup className="rounded-0 position-fixed bottom-0 top-0 d-none d-md-block bg-black z-2 text-center" style={{ width: 110 }}>
       <ListGroupItem className="bg-black border-0">
-        <a
-          className="d-inline-block"
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.northeastern.edu/"
-          id="wd-neu-link"
-        >
-          <img src="/images/NEU.svg" width="75" alt="Northeastern University" />
+        <a target="_blank" rel="noopener noreferrer" href="https://www.northeastern.edu/" id="wd-neu-link">
+          <img src="/images/NEU.svg" width="75" alt="NEU" />
         </a>
       </ListGroupItem>
 
-      {items.map((it) => {
-        const active = isActive(it.href);
-        const base = "border-0 text-center rounded-0 text-decoration-none";
-        const className = active ? `bg-white ${base}` : `bg-black ${base}`;
-        const textClass = active ? "text-danger" : "text-white";
+      <ListGroupItem
+        as={Link}
+        href="/Account"
+        className={`border-0 text-center rounded-0 ${isAccount ? "bg-white text-danger" : "bg-black text-white"}`}
+      >
+        <div className="d-flex flex-column align-items-center">
+          <FaRegCircleUser className={`fs-1 ${isAccount ? "text-danger" : "text-white"}`} />
+          <small className={isAccount ? "text-danger" : "text-white"}>Account</small>
+        </div>
+      </ListGroupItem>
 
-        return (
-          <ListGroupItem key={it.id} className={className}>
-            <Link href={it.href} id={it.id} className={`${textClass} text-decoration-none`}>
-              <div className="d-flex flex-column align-items-center">
-                {/* Keep Account icon white to match rubric */}
-                {it.label === "Account"
-                  ? <FaRegCircleUser className="fs-1 text-white" />
-                  : it.icon}
-                <small className={textClass}>{it.label}</small>
-              </div>
-            </Link>
-          </ListGroupItem>
-        );
-      })}
+      {links.map(({ label, path, icon: Icon }) => (
+        <ListGroupItem
+          key={label}
+          as={Link}
+          href={path}
+          className={`border-0 text-center rounded-0 ${isActive(path) ? "bg-white" : "bg-black"}`}
+        >
+          <div className="d-flex flex-column align-items-center">
+            <Icon className="fs-1 text-danger" />
+            <small className={isActive(path) ? "text-danger" : "text-white"}>{label}</small>
+          </div>
+        </ListGroupItem>
+      ))}
+
+      <ListGroupItem className="border-0 text-center rounded-0 bg-black">
+        <a href="/Labs" className="text-white text-decoration-none d-flex flex-column align-items-center">
+          <LiaCogSolid className="fs-1 text-danger" />
+          <small className="text-white">Labs</small>
+        </a>
+      </ListGroupItem>
     </ListGroup>
   );
 }

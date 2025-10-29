@@ -1,3 +1,6 @@
+"use client";
+
+import Nav from "react-bootstrap/Nav";
 import NavItem from "react-bootstrap/NavItem";
 import NavLink from "react-bootstrap/NavLink";
 import Card from "react-bootstrap/Card";

@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 import Button from "react-bootstrap/Button";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -10,21 +13,23 @@ import { FaSearch, FaPlus, FaCheckCircle } from "react-icons/fa";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { BsGripVertical } from "react-icons/bs";
 
+import assignments from "../../../Database/assignments.json";
+
 type RouteParams = { cid: string };
 
-export default async function Assignments({
-  params,
-}: {
-  params: Promise<RouteParams>;
-}) {
+type Assignment = {
+  _id: string;
+  title: string;
+  course: string;   
+  avail?: string;  
+  due?: string;   
+  pts?: number;    
+};
 
-  const { cid } = await params;
-
-  const items = [
-    { id: "123", title: "A1 – ENV + HTML",         avail: "May 6 at 12:00am",  due: "May 13 at 11:59pm", pts: 100 },
-    { id: "124", title: "A2 – CSS + BOOTSTRAP",    avail: "May 13 at 12:00am", due: "May 20 at 11:59pm", pts: 100 },
-    { id: "125", title: "A3 – JAVASCRIPT + REACT", avail: "May 20 at 12:00am", due: "May 27 at 11:59pm", pts: 100 },
-  ];
+export default function AssignmentsPage() {
+  const { cid } = useParams<RouteParams>();
+  const all = (assignments as Assignment[]) ?? [];
+  const items = all.filter((a) => a.course === cid);
 
   return (
     <div id="wd-assignments" className="p-3 pe-3">
@@ -61,22 +66,31 @@ export default async function Assignments({
 
           <ListGroup variant="flush" className="rounded-0">
             {items.map((a) => (
-              <ListGroup.Item key={a.id} className="wd-assignment-item p-3 ps-2">
+              <ListGroup.Item key={a._id} className="wd-assignment-item p-3 ps-2">
                 <div className="d-flex">
                   <BsGripVertical className="me-3 fs-5 text-muted" />
                   <div className="flex-fill">
                     <Link
-                      href={`/Courses/${cid}/Assignments/${a.id}`}
+                      href={`/Courses/${cid}/Assignments/${a._id}`}
                       className="text-decoration-none"
+                      id={`wd-assignment-link-${a._id}`}
                     >
                       <div className="fw-semibold text-primary">{a.title}</div>
                     </Link>
+
                     <div className="small text-muted">
-                      Multiple Modules <span className="mx-2">|</span>
-                      <strong>Not available until</strong> {a.avail} <span className="mx-2">|</span>
-                      <br className="d-md-none" />
-                      <strong>Due</strong> {a.due} <span className="mx-2">|</span>
-                      {a.pts} pts
+                      {/* These are optional fields; show only if present */}
+                      {a.avail && (
+                        <>
+                          <strong>Not available until</strong> {a.avail} <span className="mx-2">|</span>
+                        </>
+                      )}
+                      {a.due && (
+                        <>
+                          <strong>Due</strong> {a.due} <span className="mx-2">|</span>
+                        </>
+                      )}
+                      {typeof a.pts === "number" ? `${a.pts} pts` : null}
                     </div>
                   </div>
                   <div className="d-flex align-items-center ms-3">
@@ -86,6 +100,12 @@ export default async function Assignments({
                 </div>
               </ListGroup.Item>
             ))}
+
+            {items.length === 0 && (
+              <ListGroup.Item className="text-muted">
+                No assignments for this course.
+              </ListGroup.Item>
+            )}
           </ListGroup>
         </ListGroup.Item>
       </ListGroup>

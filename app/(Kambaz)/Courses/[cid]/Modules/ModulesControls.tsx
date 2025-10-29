@@ -22,7 +22,6 @@ export default function ModulesControls() {
         Module
       </Button>
 
-      {/* Publish All dropdown */}
       <Dropdown className="float-end me-2">
         <DropdownToggle variant="secondary" size="lg" id="wd-publish-all-btn">
           <GreenCheckmark /> Publish All
@@ -46,7 +45,6 @@ export default function ModulesControls() {
         </DropdownMenu>
       </Dropdown>
 
-      {/* View Progress & Collapse All */}
       <Button
         variant="secondary"
         size="lg"
