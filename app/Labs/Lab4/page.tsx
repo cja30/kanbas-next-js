@@ -15,8 +15,7 @@ import ReduxExamples from "./ReduxExamples/page";
 import HelloRedux from "./ReduxExamples/HelloRedux/page";
 import CounterRedux from "./ReduxExamples/CounterRedux/page";
 import AddRedux from "./ReduxExamples/AddRedux/page";
-import Todos from "./ReduxExamples/todos/TodoList";
-
+import Todos from "./ReduxExamples/Todos/TodoList";
 
 export default function Lab4() {
   function sayHello() {
