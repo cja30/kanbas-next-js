@@ -2,23 +2,14 @@
 
 import { useParams, usePathname } from "next/navigation";
 import { FaAlignJustify } from "react-icons/fa6";
-import { courses as allCourses } from "../../Database";
-
-type Course = {
-  _id: string;
-  name: string;
-  description?: string;
-  startDate?: string;
-  endDate?: string;
-};
+import { useKambaz } from "../../layout";
 
 export default function CoursesPage() {
+  const { courses } = useKambaz();
   const { cid } = useParams<{ cid: string }>();
   const pathname = usePathname() ?? "";
 
-  const course: Course | undefined = allCourses.find(
-    (c: Course) => c._id === cid
-  );
+  const course = courses.find((c) => c._id === cid);
 
   const parts = pathname.split("/");
   const section = parts[4] ?? "Home";

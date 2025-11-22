@@ -13,7 +13,7 @@ export default function KambazNavigation() {
 
   const links = [
     { label: "Dashboard", path: "/Dashboard", icon: AiOutlineDashboard },
-    { label: "Courses",   path: "/Dashboard", icon: LiaBookSolid },
+    { label: "Courses",   path: "/Courses", icon: LiaBookSolid },
     { label: "Calendar",  path: "/Calendar",  icon: IoCalendarOutline },
     { label: "Inbox",     path: "/Inbox",     icon: FaInbox },
   ];
@@ -22,7 +22,7 @@ export default function KambazNavigation() {
   const isAccount = pathname.startsWith("/Kambaz/Account");
 
   return (
-    <ListGroup className="rounded-0 position-fixed bottom-0 top-0 d-none d-md-block bg-black z-2 text-center" style={{ width: 110 }}>
+    <ListGroup className="rounded-0 position-fixed bottom-0 top-0 d-none d-md-block bg-black z-2 text-center" style={{ width: 110, padding: 0 }}>
       <ListGroupItem className="bg-black border-0">
         <a target="_blank" rel="noopener noreferrer" href="https://www.northeastern.edu/" id="wd-neu-link">
           <img src="/images/NEU.svg" width="75" alt="NEU" />

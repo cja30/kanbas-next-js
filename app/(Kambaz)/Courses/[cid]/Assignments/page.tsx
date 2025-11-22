@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
 
 import Button from "react-bootstrap/Button";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -9,45 +10,60 @@ import Form from "react-bootstrap/Form";
 import ListGroup from "react-bootstrap/ListGroup";
 import Badge from "react-bootstrap/Badge";
 
-import { FaSearch, FaPlus, FaCheckCircle } from "react-icons/fa";
+import { FaSearch, FaPlus, FaTrash } from "react-icons/fa";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { BsGripVertical } from "react-icons/bs";
 
-import assignments from "../../../Database/assignments.json";
+import { deleteAssignment } from "./reducer";
 
 type RouteParams = { cid: string };
 
-type Assignment = {
-  _id: string;
-  title: string;
-  course: string;   
-  avail?: string;  
-  due?: string;   
-  pts?: number;    
-};
-
 export default function AssignmentsPage() {
   const { cid } = useParams<RouteParams>();
-  const all = (assignments as Assignment[]) ?? [];
-  const items = all.filter((a) => a.course === cid);
+  const dispatch = useDispatch();
+
+  const { assignments } = useSelector((s: any) => s.assignmentsReducer);
+  const { currentUser } = useSelector((s: any) => s.accountReducer);
+  const { enrollments } = useSelector((s: any) => s.enrollmentsReducer);
+
+  const role = currentUser?.role;
+  const isAdmin = role === "ADMIN";
+  const isFaculty = role === "FACULTY";
+  const isStudent = role === "STUDENT" || role === "USER";
+
+  const enrolled = enrollments.some(
+    (e: any) => e.user === currentUser?._id && e.course === cid
+  );
+
+  const canEdit = isAdmin || (isFaculty && enrolled);
+
+  const items = assignments.filter((a: any) => a.course === cid);
 
   return (
     <div id="wd-assignments" className="p-3 pe-3">
-      {/* Top controls */}
+      {/* Controls */}
       <div className="d-flex align-items-center mb-3">
         <InputGroup className="me-auto" style={{ maxWidth: 420 }}>
           <span className="input-group-text bg-white">
             <FaSearch className="opacity-75" />
           </span>
-          <Form.Control id="wd-search-assignment" placeholder="Search for Assignments" />
+          <Form.Control placeholder="Search Assignments" />
         </InputGroup>
 
-        <Button variant="secondary" size="lg" className="me-2" id="wd-add-assignment-group">
-          <FaPlus className="me-2" /> Group
-        </Button>
-        <Button variant="danger" size="lg" id="wd-add-assignment">
-          <FaPlus className="me-2" /> Assignment
-        </Button>
+        {canEdit && (
+          <>
+            <Button variant="secondary" size="lg" className="me-2">
+              <FaPlus className="me-2" /> Group
+            </Button>
+
+            <Link
+              href={`/Courses/${cid}/Assignments/new`}
+              className="btn btn-danger btn-lg"
+            >
+              <FaPlus className="me-2" /> Assignment
+            </Link>
+          </>
+        )}
       </div>
 
       <ListGroup className="rounded-0">
@@ -56,47 +72,64 @@ export default function AssignmentsPage() {
             <div className="d-flex align-items-center">
               <BsGripVertical className="me-2 fs-4" />
               <span className="fw-semibold">ASSIGNMENTS</span>
-              <Badge bg="light" text="dark" className="ms-2">40% of Total</Badge>
+              <Badge bg="light" text="dark" className="ms-2">
+                40% of Total
+              </Badge>
             </div>
             <div>
-              <Button size="sm" variant="light" className="border-0 me-1"><FaPlus /></Button>
-              <Button size="sm" variant="light" className="border-0"><IoEllipsisVertical /></Button>
+              {canEdit && (
+                <>
+                  <Button size="sm" variant="light" className="border-0 me-1">
+                    <FaPlus />
+                  </Button>
+                  <Button size="sm" variant="light" className="border-0">
+                    <IoEllipsisVertical />
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 
-          <ListGroup variant="flush" className="rounded-0">
-            {items.map((a) => (
-              <ListGroup.Item key={a._id} className="wd-assignment-item p-3 ps-2">
+          <ListGroup variant="flush">
+            {items.map((a: any) => (
+              <ListGroup.Item key={a._id} className="p-3 ps-2">
                 <div className="d-flex">
                   <BsGripVertical className="me-3 fs-5 text-muted" />
+
                   <div className="flex-fill">
                     <Link
                       href={`/Courses/${cid}/Assignments/${a._id}`}
                       className="text-decoration-none"
-                      id={`wd-assignment-link-${a._id}`}
                     >
                       <div className="fw-semibold text-primary">{a.title}</div>
                     </Link>
 
                     <div className="small text-muted">
-                      {/* These are optional fields; show only if present */}
                       {a.avail && (
                         <>
-                          <strong>Not available until</strong> {a.avail} <span className="mx-2">|</span>
+                          <strong>Not available until</strong> {a.avail} |
                         </>
                       )}
                       {a.due && (
                         <>
-                          <strong>Due</strong> {a.due} <span className="mx-2">|</span>
+                          <strong>Due</strong> {a.due} |
                         </>
                       )}
-                      {typeof a.pts === "number" ? `${a.pts} pts` : null}
+                      {typeof a.pts === "number" ? `${a.pts} pts` : ""}
                     </div>
                   </div>
-                  <div className="d-flex align-items-center ms-3">
-                    <FaCheckCircle className="text-success me-3" />
-                    <IoEllipsisVertical className="fs-4" />
-                  </div>
+
+                  {canEdit && (
+                    <FaTrash
+                      className="text-danger ms-3"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        if (confirm("Delete assignment?")) {
+                          dispatch(deleteAssignment(a._id));
+                        }
+                      }}
+                    />
+                  )}
                 </div>
               </ListGroup.Item>
             ))}

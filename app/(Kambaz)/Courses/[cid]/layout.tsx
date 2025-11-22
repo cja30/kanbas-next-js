@@ -1,29 +1,57 @@
-import { ReactNode } from "react";
+"use client";
+
+import { useSelector } from "react-redux";
+import { redirect } from "next/navigation";
 import { FaAlignJustify } from "react-icons/fa6";
 import CourseNavigation from "./Navigation";
+import ProtectedRoute from "../../Account/ProtectedRoute";
 
-export default async function CourseLayout({
+export default function CourseLayout({
   children,
   params,
 }: {
-  children: ReactNode;
-  params: Promise<{ cid: string }>;
+  children: React.ReactNode;
+  params: { cid: string };
 }) {
-  const { cid } = await params;
+  const { cid } = params;
+
+  const { currentUser } = useSelector((s: any) => s.accountReducer);
+  const { enrollments } = useSelector((s: any) => s.enrollmentsReducer);
+
+  if (!currentUser) redirect("/Account/Signin");
+
+  const role = currentUser.role;
+
+  const isEnrolled = enrollments.some(
+    (e: any) => e.user === currentUser._id && e.course === cid
+  );
+
+  const isAdmin = role === "ADMIN";
+  const isFaculty = role === "FACULTY";
+  const isStudent = role === "STUDENT" || role === "USER";
+
+  if (!isAdmin) {
+    if (isStudent && !isEnrolled) redirect("/Dashboard");
+    if (isFaculty && !isEnrolled) redirect("/Dashboard"); 
+  }
 
   return (
-    <div id="wd-courses">
-      <h2 className="text-danger">
-        <FaAlignJustify className="me-4 fs-4 mb-1" />
-        Course {cid}
-      </h2>
-      <hr />
-      <div className="d-flex">
-        <div className="d-none d-md-block" style={{ width: 200 }}>
-          <CourseNavigation />
+    <ProtectedRoute>
+      <div id="wd-courses">
+        <h2 className="text-danger">
+          <FaAlignJustify className="me-4 fs-4 mb-1" />
+          Course {cid}
+        </h2>
+        <hr />
+
+        <div className="d-flex">
+          <div className="d-none d-md-block" style={{ width: 200 }}>
+            <CourseNavigation />
+          </div>
+
+          <div className="flex-fill">{children}</div>
         </div>
-        <div className="flex-fill">{children}</div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 }

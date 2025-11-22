@@ -27,7 +27,13 @@ export default function TOC() {
         </NavLink>
       </NavItem>
       <NavItem>
-        <NavLink as={Link} href="/Account/Signin" id="wd-a4">
+        <NavLink as={Link} href="/Labs/Lab4" id="wd-a4"
+                 active={pathname.includes("Lab4")}>
+          Lab 4
+        </NavLink>
+      </NavItem>
+      <NavItem>
+        <NavLink as={Link} href="/Account/Signin" id="wd-a5">
           Kambaz
         </NavLink>
       </NavItem>

@@ -1,3 +1,5 @@
+"use client";
+
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import InputGroupText from "react-bootstrap/InputGroupText";
@@ -54,45 +56,53 @@ export default function BootstrapForms() {
         </InputGroup>
       </div>
 
+      {/* ---------- FIXED SECTION BELOW ---------- */}
+
       <div id="wd-css-responsive-forms-1">
         <h3>Responsive forms</h3>
-        <Row className="mb-3" controlId="email1">
+
+        <Form.Group as={Row} className="mb-3" controlId="email1">
           <Form.Label column sm={2}>Email</Form.Label>
           <Col sm={10}>
             <Form.Control type="email" defaultValue="email@example.com" />
           </Col>
-        </Row>
-        <Row className="mb-3" controlId="password1">
+        </Form.Group>
+
+        <Form.Group as={Row} className="mb-3" controlId="password1">
           <Form.Label column sm={2}>Password</Form.Label>
           <Col sm={10}>
             <Form.Control type="password" />
           </Col>
-        </Row>
-        <Row className="mb-3" controlId="textarea2">
+        </Form.Group>
+
+        <Form.Group as={Row} className="mb-3" controlId="textarea2">
           <Form.Label column sm={2}>Bio</Form.Label>
           <Col sm={10}>
             <Form.Control as="textarea" style={{ height: "100px" }} />
           </Col>
-        </Row>
+        </Form.Group>
       </div>
 
       <div id="wd-css-responsive-forms-2">
         <h3>Responsive forms 2</h3>
+
         <Form>
-          <Row className="mb-3" controlId="formHorizontalEmail">
+          <Form.Group as={Row} className="mb-3" controlId="formHorizontalEmail">
             <Form.Label column sm={2}>Email</Form.Label>
             <Col sm={10}>
               <Form.Control type="email" placeholder="Email" />
             </Col>
-          </Row>
-          <Row className="mb-3" controlId="formHorizontalPassword">
+          </Form.Group>
+
+          <Form.Group as={Row} className="mb-3" controlId="formHorizontalPassword">
             <Form.Label column sm={2}>Password</Form.Label>
             <Col sm={10}>
               <Form.Control type="password" placeholder="Password" />
             </Col>
-          </Row>
+          </Form.Group>
+
           <fieldset>
-            <Row className="mb-3">
+            <Form.Group as={Row} className="mb-3">
               <Form.Label as="legend" column sm={2}>Radios</Form.Label>
               <Col sm={10}>
                 <Form.Check type="radio" label="First radio" name="formHorizontalRadios" defaultChecked />
@@ -100,8 +110,9 @@ export default function BootstrapForms() {
                 <Form.Check type="radio" label="Third radio" name="formHorizontalRadios" />
                 <Form.Check type="radio" label="Remember me" name="formHorizontalRadios" />
               </Col>
-            </Row>
+            </Form.Group>
           </fieldset>
+
           <Col>
             <Button type="submit">Sign in</Button>
           </Col>

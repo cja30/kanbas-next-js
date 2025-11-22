@@ -24,7 +24,6 @@ export default function CourseStatus() {
         </Button>
       </div>
 
-      {/* Rest of actions */}
       <Button variant="secondary" size="lg" className="w-100 mt-2 text-start">
         <BiImport className="me-2 fs-5" />
         Import Existing Content

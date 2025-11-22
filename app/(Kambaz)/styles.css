@@ -10,9 +10,10 @@ body * {
 
 @media (min-width: 768px) {
   #wd-kambaz .wd-main-content-offset {
-    padding-left: 140px !important;
+    margin-left: 110px !important; 
   }
 }
+
 
 #wd-dashboard #wd-dashboard-courses .wd-courses-row {
   --bs-gutter-x: 2rem; 
