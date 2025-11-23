@@ -2,14 +2,15 @@
 
 import { useParams, usePathname } from "next/navigation";
 import { FaAlignJustify } from "react-icons/fa6";
-import { useKambaz } from "../../layout";
+import { useSelector } from "react-redux";
 
 export default function CoursesPage() {
-  const { courses } = useKambaz();
   const { cid } = useParams<{ cid: string }>();
   const pathname = usePathname() ?? "";
 
-  const course = courses.find((c) => c._id === cid);
+  const { courses } = useSelector((state: any) => state.coursesReducer);
+
+  const course = courses.find((c: any) => c._id === cid);
 
   const parts = pathname.split("/");
   const section = parts[4] ?? "Home";
