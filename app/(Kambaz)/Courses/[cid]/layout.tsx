@@ -6,14 +6,14 @@ import { FaAlignJustify } from "react-icons/fa6";
 import CourseNavigation from "./Navigation";
 import ProtectedRoute from "../../Account/ProtectedRoute";
 
-export default function CourseLayout({
+export default async function CourseLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: { cid: string };
+  params: Promise<{ cid: string }>;
 }) {
-  const { cid } = params;
+  const { cid } = await params;
 
   const { currentUser } = useSelector((s: any) => s.accountReducer);
   const { enrollments } = useSelector((s: any) => s.enrollmentsReducer);
@@ -32,7 +32,7 @@ export default function CourseLayout({
 
   if (!isAdmin) {
     if (isStudent && !isEnrolled) redirect("/Dashboard");
-    if (isFaculty && !isEnrolled) redirect("/Dashboard"); 
+    if (isFaculty && !isEnrolled) redirect("/Dashboard");
   }
 
   return (
