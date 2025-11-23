@@ -1,15 +1,57 @@
-import ClientCourseGate from "./ClientCourseGate";
+"use client";
 
-export default function CourseLayout({
+import { useSelector } from "react-redux";
+import { redirect } from "next/navigation";
+import { FaAlignJustify } from "react-icons/fa6";
+import CourseNavigation from "./Navigation";
+import ProtectedRoute from "../../Account/ProtectedRoute";
+
+export default async function CourseLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: { cid: string };
+  params: Promise<{ cid: string }>;
 }) {
+  const { cid } = await params;
+
+  const { currentUser } = useSelector((s: any) => s.accountReducer);
+  const { enrollments } = useSelector((s: any) => s.enrollmentsReducer);
+
+  if (!currentUser) redirect("/Account/Signin");
+
+  const role = currentUser.role;
+
+  const isEnrolled = enrollments.some(
+    (e: any) => e.user === currentUser._id && e.course === cid
+  );
+
+  const isAdmin = role === "ADMIN";
+  const isFaculty = role === "FACULTY";
+  const isStudent = role === "STUDENT" || role === "USER";
+
+  if (!isAdmin) {
+    if (isStudent && !isEnrolled) redirect("/Dashboard");
+    if (isFaculty && !isEnrolled) redirect("/Dashboard");
+  }
+
   return (
-    <ClientCourseGate cid={params.cid}>
-      {children}
-    </ClientCourseGate>
+    <ProtectedRoute>
+      <div id="wd-courses">
+        <h2 className="text-danger">
+          <FaAlignJustify className="me-4 fs-4 mb-1" />
+          Course {cid}
+        </h2>
+        <hr />
+
+        <div className="d-flex">
+          <div className="d-none d-md-block" style={{ width: 200 }}>
+            <CourseNavigation />
+          </div>
+
+          <div className="flex-fill">{children}</div>
+        </div>
+      </div>
+    </ProtectedRoute>
   );
 }
