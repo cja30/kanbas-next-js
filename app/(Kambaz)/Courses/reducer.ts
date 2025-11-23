@@ -20,10 +20,19 @@ const coursesSlice = createSlice({
     addCourse: (state, { payload }) => {
       const newCourse = {
         _id: uuidv4(),
+
         name: payload.name,
+        number: payload.number ?? "",
+        startDate: payload.startDate ?? "",
+        endDate: payload.endDate ?? "",
+        department: payload.department ?? "",
+        credits: payload.credits ?? 0,
         description: payload.description,
-        image: "/images/reactjs.jpg",
+        author: payload.author ?? "",
+
+        image: payload.image || "/images/reactjs.jpg",
       };
+
       state.courses.push(newCourse);
       state.editingCourse = null;
     },
