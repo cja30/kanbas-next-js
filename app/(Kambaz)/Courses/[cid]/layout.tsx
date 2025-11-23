@@ -1,4 +1,4 @@
-import ClientCourseGate from "./ClientCourseGate.tsx";
+import ClientCourseGate from "./ClientCourseGate";
 
 export default function CourseLayout({
   children,
