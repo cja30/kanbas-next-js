@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { addAssignment, updateAssignment } from "../reducer";
 
@@ -18,6 +18,7 @@ export default function AssignmentEditor() {
 
   const { currentUser } = useSelector((s: any) => s.accountReducer);
   const { enrollments } = useSelector((s: any) => s.enrollmentsReducer);
+  const { assignments } = useSelector((s: any) => s.assignmentsReducer);
 
   const isAdmin = currentUser?.role === "ADMIN";
 
@@ -27,18 +28,8 @@ export default function AssignmentEditor() {
       (e: any) => e.user === currentUser._id && e.course === cid
     );
 
-  if (!isAdmin && !isFacultyEnrolled) {
-    router.push(`/Courses/${cid}/Assignments`);
-    return null;
-  }
-
-  const { assignments } = useSelector(
-    (state: any) => state.assignmentsReducer
-  );
-
-  const existing = assignments.find(
-    (a: any) => a._id === aid && a.course === cid
-  );
+  const existing =
+    assignments.find((a: any) => a._id === aid && a.course === cid) || null;
 
   const [assignment, setAssignment] = useState(
     existing || {
@@ -52,6 +43,14 @@ export default function AssignmentEditor() {
       until: "",
     }
   );
+
+  useEffect(() => {
+    if (!isAdmin && !isFacultyEnrolled) {
+      router.push(`/Courses/${cid}/Assignments`);
+    }
+  }, [isAdmin, isFacultyEnrolled, cid, router]);
+
+  if (!isAdmin && !isFacultyEnrolled) return null;
 
   const updateField = (field: string, value: any) =>
     setAssignment({ ...assignment, [field]: value });
