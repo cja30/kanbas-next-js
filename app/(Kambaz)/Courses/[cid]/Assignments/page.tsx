@@ -19,12 +19,12 @@ import { deleteAssignment } from "./reducer";
 type RouteParams = { cid: string };
 
 export default function AssignmentsPage() {
-  const { cid } = useParams<RouteParams>();
   const dispatch = useDispatch();
+  const { cid } = useParams<RouteParams>();
 
-  const { assignments } = useSelector((s: any) => s.assignmentsReducer);
-  const { currentUser } = useSelector((s: any) => s.accountReducer);
-  const { enrollments } = useSelector((s: any) => s.enrollmentsReducer);
+  const assignments = useSelector((s: any) => s.assignmentsReducer.assignments);
+  const currentUser = useSelector((s: any) => s.accountReducer.currentUser);
+  const enrollments = useSelector((s: any) => s.enrollmentsReducer.enrollments);
 
   const role = currentUser?.role;
   const isAdmin = role === "ADMIN";
@@ -41,6 +41,7 @@ export default function AssignmentsPage() {
 
   return (
     <div id="wd-assignments" className="p-3 pe-3">
+      
       {/* Controls */}
       <div className="d-flex align-items-center mb-3">
         <InputGroup className="me-auto" style={{ maxWidth: 420 }}>
@@ -76,18 +77,17 @@ export default function AssignmentsPage() {
                 40% of Total
               </Badge>
             </div>
-            <div>
-              {canEdit && (
-                <>
-                  <Button size="sm" variant="light" className="border-0 me-1">
-                    <FaPlus />
-                  </Button>
-                  <Button size="sm" variant="light" className="border-0">
-                    <IoEllipsisVertical />
-                  </Button>
-                </>
-              )}
-            </div>
+
+            {canEdit && (
+              <div>
+                <Button size="sm" variant="light" className="border-0 me-1">
+                  <FaPlus />
+                </Button>
+                <Button size="sm" variant="light" className="border-0">
+                  <IoEllipsisVertical />
+                </Button>
+              </div>
+            )}
           </div>
 
           <ListGroup variant="flush">
