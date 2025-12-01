@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { redirect } from "next/navigation";
 import { setCurrentUser } from "../reducer";
-
+import * as client from "../client"; 
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 
@@ -22,12 +22,19 @@ export default function Profile() {
     }
   }, [currentUser]);
 
-  const signout = () => {
-    dispatch(setCurrentUser(null));
-    redirect("/Account/Signin");
+  const updateProfile = async () => {
+    const updatedProfile = await client.updateUser(profile);
+    dispatch(setCurrentUser(updatedProfile));
+    alert("Profile successfully updated!");
   };
 
-  if (!profile) return null; 
+  const signout = async () => {
+  await client.signout();
+  dispatch(setCurrentUser(null));
+  redirect("/Account/Signin");
+  };
+
+  if (!profile) return null;
 
   return (
     <div className="wd-main-content-offset container-fluid py-3">
@@ -35,11 +42,11 @@ export default function Profile() {
         <div className="col-12 col-md-6 col-lg-4">
           <div id="wd-profile-screen">
             <h1 className="h3 mb-3">Profile</h1>
-            
+
             <Form.Control
               id="wd-username"
               className="mb-2"
-              defaultValue={profile.username}
+              value={profile.username}
               onChange={(e) =>
                 setProfile({ ...profile, username: e.target.value })
               }
@@ -49,7 +56,7 @@ export default function Profile() {
               id="wd-password"
               className="mb-2"
               type="password"
-              defaultValue={profile.password}
+              value={profile.password}
               onChange={(e) =>
                 setProfile({ ...profile, password: e.target.value })
               }
@@ -58,7 +65,7 @@ export default function Profile() {
             <Form.Control
               id="wd-firstname"
               className="mb-2"
-              defaultValue={profile.firstName}
+              value={profile.firstName || ""}
               onChange={(e) =>
                 setProfile({ ...profile, firstName: e.target.value })
               }
@@ -67,7 +74,7 @@ export default function Profile() {
             <Form.Control
               id="wd-lastname"
               className="mb-2"
-              defaultValue={profile.lastName}
+              value={profile.lastName || ""}
               onChange={(e) =>
                 setProfile({ ...profile, lastName: e.target.value })
               }
@@ -77,7 +84,7 @@ export default function Profile() {
               id="wd-dob"
               type="date"
               className="mb-2"
-              defaultValue={profile.dob}
+              value={profile.dob || ""}
               onChange={(e) =>
                 setProfile({ ...profile, dob: e.target.value })
               }
@@ -86,7 +93,7 @@ export default function Profile() {
             <Form.Control
               id="wd-email"
               className="mb-2"
-              defaultValue={profile.email}
+              value={profile.email || ""}
               onChange={(e) =>
                 setProfile({ ...profile, email: e.target.value })
               }
@@ -95,7 +102,7 @@ export default function Profile() {
             <Form.Select
               id="wd-role"
               className="mb-3"
-              defaultValue={profile.role}
+              value={profile.role}
               onChange={(e) =>
                 setProfile({ ...profile, role: e.target.value })
               }
@@ -105,6 +112,13 @@ export default function Profile() {
               <option value="STUDENT">Student</option>
               <option value="ADMIN">Admin</option>
             </Form.Select>
+
+            <Button
+              className="btn btn-primary w-100 mb-2"
+              onClick={updateProfile}
+            >
+              Update
+            </Button>
 
             <Button
               id="wd-signout-btn"

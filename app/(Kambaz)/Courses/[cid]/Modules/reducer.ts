@@ -1,48 +1,51 @@
 "use client";
 
 import { createSlice } from "@reduxjs/toolkit";
-import * as db from "../../../Database";
-import { v4 as uuidv4 } from "uuid";
 
 const initialState = {
-  modules: db.modules,
+  modules: [],
 };
 
 const modulesSlice = createSlice({
   name: "modules",
   initialState,
   reducers: {
-    addModule: (state, { payload }) => {
-      state.modules.push({
-        _id: uuidv4(),
-        name: payload.name,
-        description: "",         
-        course: payload.course,
-        lessons: [],
-      });
+    setModules: (state, action) => {
+      state.modules = action.payload;
     },
 
-    deleteModule: (state, { payload }) => {
-      state.modules = state.modules.filter((m) => m._id !== payload);
+    addModule: (state, action) => {
+      state.modules.push(action.payload);
     },
 
-    updateModule: (state, { payload }) => {
-      state.modules = state.modules.map((m) =>
-        m._id === payload._id
-          ? { ...m, ...payload } 
-          : m
+    deleteModule: (state, action) => {
+      state.modules = state.modules.filter(
+        (module) => module._id !== action.payload
       );
     },
 
-    editModule: (state, { payload }) => {
-      state.modules = state.modules.map((m) =>
-        m._id === payload ? { ...m, editing: true } : m
+    updateModule: (state, action) => {
+      state.modules = state.modules.map((module) =>
+        module._id === action.payload._id ? action.payload : module
+      );
+    },
+
+    editModule: (state, action) => {
+      state.modules = state.modules.map((module) =>
+        module._id === action.payload
+          ? { ...module, editing: true }
+          : module
       );
     },
   },
 });
 
-export const { addModule, deleteModule, updateModule, editModule } =
-  modulesSlice.actions;
+export const {
+  addModule,
+  deleteModule,
+  updateModule,
+  editModule,
+  setModules,
+} = modulesSlice.actions;
 
 export default modulesSlice.reducer;

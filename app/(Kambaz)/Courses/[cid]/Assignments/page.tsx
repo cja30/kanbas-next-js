@@ -3,6 +3,10 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+
+import * as client from "./client";
+import { setAssignments } from "./reducer";
 
 import Button from "react-bootstrap/Button";
 import InputGroup from "react-bootstrap/InputGroup";
@@ -13,8 +17,6 @@ import Badge from "react-bootstrap/Badge";
 import { FaSearch, FaPlus, FaTrash } from "react-icons/fa";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { BsGripVertical } from "react-icons/bs";
-
-import { deleteAssignment } from "./reducer";
 
 type RouteParams = { cid: string };
 
@@ -29,20 +31,28 @@ export default function AssignmentsPage() {
   const role = currentUser?.role;
   const isAdmin = role === "ADMIN";
   const isFaculty = role === "FACULTY";
-  const isStudent = role === "STUDENT" || role === "USER";
 
-  const enrolled = enrollments.some(
-    (e: any) => e.user === currentUser?._id && e.course === cid
-  );
+  const enrolled = enrollments.includes(cid);
 
   const canEdit = isAdmin || (isFaculty && enrolled);
+
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      const data = await client.findAssignmentsForCourse(cid);
+      dispatch(setAssignments(data));
+    };
+    fetchAssignments();
+  }, [cid, dispatch]);
+
+  const onDelete = async (id: string) => {
+    await client.deleteAssignment(id);
+    dispatch(setAssignments(assignments.filter((a: any) => a._id !== id)));
+  };
 
   const items = assignments.filter((a: any) => a.course === cid);
 
   return (
     <div id="wd-assignments" className="p-3 pe-3">
-      
-      {/* Controls */}
       <div className="d-flex align-items-center mb-3">
         <InputGroup className="me-auto" style={{ maxWidth: 420 }}>
           <span className="input-group-text bg-white">
@@ -125,7 +135,7 @@ export default function AssignmentsPage() {
                       style={{ cursor: "pointer" }}
                       onClick={() => {
                         if (confirm("Delete assignment?")) {
-                          dispatch(deleteAssignment(a._id));
+                          onDelete(a._id);
                         }
                       }}
                     />

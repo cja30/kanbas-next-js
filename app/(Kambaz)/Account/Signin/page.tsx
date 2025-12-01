@@ -4,14 +4,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setCurrentUser } from "../reducer";
-import * as db from "../../Database";
+import * as client from "../client";
+import * as enrollClient from "../../Enrollments/client";
+import { setEnrollments } from "../../Enrollments/reducer";
 
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Link from "next/link";
 
 export default function Signin() {
-  const [credentials, setCredentials] = useState<any>({
+  const [credentials, setCredentials] = useState({
     username: "",
     password: "",
   });
@@ -19,21 +21,24 @@ export default function Signin() {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const signin = () => {
-    const user = db.users.find(
-      (u: any) =>
-        u.username === credentials.username &&
-        u.password === credentials.password
-    );
+  const signin = async () => {
+    try {
+      const user = await client.signin(credentials);
+      if (!user) return;
 
-    if (!user) return;        
+      dispatch(setCurrentUser(user));
 
-    dispatch(setCurrentUser(user)); 
-    router.push("/Dashboard");     
+      const myEnrollments = await enrollClient.findMyEnrollments();
+      dispatch(setEnrollments(myEnrollments));
+
+      router.push("/Dashboard");
+    } catch (err: any) {
+      alert(err?.response?.data?.message || "Unable to sign in");
+    }
   };
 
   return (
-    <div className="wd-main-content-offset container-fluid py-3">
+    <div className="container py-4">
       <div className="row g-4">
         <div className="col-12 col-md-6 col-lg-4">
           <div id="wd-signin-screen">

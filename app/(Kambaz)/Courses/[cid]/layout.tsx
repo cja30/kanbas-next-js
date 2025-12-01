@@ -11,10 +11,14 @@ export default function CourseLayout({ children, params }) {
   const router = useRouter();
   const { cid } = params;
 
-  const { currentUser } = useSelector((s: any) => s.accountReducer);
-  const { enrollments } = useSelector((s: any) => s.enrollmentsReducer);
+  const currentUser = useSelector((s: any) => s.accountReducer.currentUser);
+  const enrollments = useSelector((s: any) => s.enrollmentsReducer.enrollments);
+
+  if (currentUser === undefined || enrollments === undefined) return null;
 
   useEffect(() => {
+    if (currentUser === undefined || enrollments === undefined) return;
+
     if (!currentUser) {
       router.push("/Account/Signin");
       return;
@@ -25,17 +29,16 @@ export default function CourseLayout({ children, params }) {
     const isFaculty = role === "FACULTY";
     const isStudent = role === "STUDENT" || role === "USER";
 
-    const isEnrolled = enrollments?.some(
-      (e: any) => e.user === currentUser._id && e.course === cid
-    );
+    const isEnrolled = enrollments.includes(cid);
 
-    if (!isAdmin) {
-      if (isStudent && !isEnrolled) router.push("/Dashboard");
-      if (isFaculty && !isEnrolled) router.push("/Dashboard");
+    if (isAdmin) return;
+    if (isFaculty) return;
+
+    if (isStudent && !isEnrolled) {
+      router.push("/Courses");
+      return;
     }
   }, [currentUser, enrollments, cid, router]);
-
-  if (!currentUser) return null;
 
   return (
     <ProtectedRoute>
@@ -44,13 +47,13 @@ export default function CourseLayout({ children, params }) {
           <FaAlignJustify className="me-4 fs-4 mb-1" />
           Course {cid}
         </h2>
+
         <hr />
 
         <div className="d-flex">
           <div className="d-none d-md-block" style={{ width: 200 }}>
             <CourseNavigation />
           </div>
-
           <div className="flex-fill">{children}</div>
         </div>
       </div>

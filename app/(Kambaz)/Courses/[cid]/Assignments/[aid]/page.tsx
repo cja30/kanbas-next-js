@@ -4,7 +4,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 
-import { addAssignment, updateAssignment } from "../reducer";
+import { setAssignments } from "../reducer";
+import * as client from "../client";
 
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -16,20 +17,16 @@ export default function AssignmentEditor() {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const { currentUser } = useSelector((s: any) => s.accountReducer);
-  const { enrollments } = useSelector((s: any) => s.enrollmentsReducer);
-  const { assignments } = useSelector((s: any) => s.assignmentsReducer);
+  const currentUser = useSelector((s: any) => s.accountReducer.currentUser);
+  const enrollments = useSelector((s: any) => s.enrollmentsReducer.enrollments);
+  const assignments = useSelector((s: any) => s.assignmentsReducer.assignments);
 
-  const isAdmin = currentUser?.role === "ADMIN";
+  const role = currentUser?.role;
+  const isAdmin = role === "ADMIN";
 
-  const isFacultyEnrolled =
-    currentUser?.role === "FACULTY" &&
-    enrollments.some(
-      (e: any) => e.user === currentUser._id && e.course === cid
-    );
+  const isFacultyEnrolled = role === "FACULTY" && enrollments.includes(cid);
 
-  const existing =
-    assignments.find((a: any) => a._id === aid && a.course === cid) || null;
+  const existing = assignments.find((a: any) => a._id === aid) || null;
 
   const [assignment, setAssignment] = useState(
     existing || {
@@ -50,21 +47,23 @@ export default function AssignmentEditor() {
     }
   }, [isAdmin, isFacultyEnrolled, cid, router]);
 
-  if (!isAdmin && !isFacultyEnrolled) return null;
-
-  const updateField = (field: string, value: any) =>
-    setAssignment({ ...assignment, [field]: value });
-
-  const save = () => {
+  const save = async () => {
     if (aid === "new") {
-      dispatch(addAssignment(assignment));
+      const created = await client.createAssignment(cid, assignment);
+      dispatch(setAssignments([...assignments, created]));
     } else {
-      dispatch(updateAssignment({ ...assignment, _id: aid }));
-    }
-    router.push(`/Courses/${cid}/Assignments`);
-  };
+      const updated = await client.updateAssignment({
+        ...assignment,
+        _id: aid,
+      });
 
-  const cancel = () => {
+      const updatedList = assignments.map((a: any) =>
+        a._id === updated._id ? updated : a
+      );
+
+      dispatch(setAssignments(updatedList));
+    }
+
     router.push(`/Courses/${cid}/Assignments`);
   };
 
@@ -79,7 +78,9 @@ export default function AssignmentEditor() {
           <Form.Label>Assignment Name</Form.Label>
           <Form.Control
             value={assignment.title}
-            onChange={(e) => updateField("title", e.target.value)}
+            onChange={(e) =>
+              setAssignment({ ...assignment, title: e.target.value })
+            }
           />
         </Form.Group>
 
@@ -89,7 +90,9 @@ export default function AssignmentEditor() {
             as="textarea"
             rows={6}
             value={assignment.description}
-            onChange={(e) => updateField("description", e.target.value)}
+            onChange={(e) =>
+              setAssignment({ ...assignment, description: e.target.value })
+            }
           />
         </Form.Group>
 
@@ -99,7 +102,7 @@ export default function AssignmentEditor() {
             type="number"
             value={assignment.pts}
             onChange={(e) =>
-              updateField("pts", Number(e.target.value))
+              setAssignment({ ...assignment, pts: Number(e.target.value) })
             }
           />
         </Form.Group>
@@ -110,7 +113,7 @@ export default function AssignmentEditor() {
             type="datetime-local"
             value={assignment.due}
             onChange={(e) =>
-              updateField("due", e.target.value)
+              setAssignment({ ...assignment, due: e.target.value })
             }
           />
         </Form.Group>
@@ -121,7 +124,7 @@ export default function AssignmentEditor() {
             type="datetime-local"
             value={assignment.avail}
             onChange={(e) =>
-              updateField("avail", e.target.value)
+              setAssignment({ ...assignment, avail: e.target.value })
             }
           />
         </Form.Group>
@@ -132,13 +135,13 @@ export default function AssignmentEditor() {
             type="datetime-local"
             value={assignment.until}
             onChange={(e) =>
-              updateField("until", e.target.value)
+              setAssignment({ ...assignment, until: e.target.value })
             }
           />
         </Form.Group>
 
         <div className="d-flex justify-content-end gap-2">
-          <Button variant="light" onClick={cancel}>
+          <Button variant="light" onClick={() => router.back()}>
             Cancel
           </Button>
 

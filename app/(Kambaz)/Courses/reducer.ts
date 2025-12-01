@@ -1,11 +1,9 @@
 "use client";
 
 import { createSlice } from "@reduxjs/toolkit";
-import * as db from "../Database";
-import { v4 as uuidv4 } from "uuid";
 
 const initialState = {
-  courses: [...db.courses],
+  courses: [],
   editingCourse: null,
 };
 
@@ -13,51 +11,24 @@ const coursesSlice = createSlice({
   name: "courses",
   initialState,
   reducers: {
+    setCourses: (state, { payload }) => {
+      state.courses = payload;
+    },
+
     setEditingCourse: (state, { payload }) => {
       state.editingCourse = payload;
     },
 
-    addCourse: (state, { payload }) => {
-      const newCourse = {
-        _id: uuidv4(),
-
-        name: payload.name,
-        number: payload.number ?? "",
-        startDate: payload.startDate ?? "",
-        endDate: payload.endDate ?? "",
-        department: payload.department ?? "",
-        credits: payload.credits ?? 0,
-        description: payload.description,
-        author: payload.author ?? "",
-
-        image: payload.image || "/images/reactjs.jpg",
-      };
-
-      state.courses.push(newCourse);
+    clearEditingCourse: (state) => {
       state.editingCourse = null;
-    },
-
-    updateCourse: (state, { payload }) => {
-      if (payload._id === "new") return;
-
-      state.courses = state.courses.map((c) =>
-        c._id === payload._id ? payload : c
-      );
-
-      state.editingCourse = null;
-    },
-
-    deleteCourse: (state, { payload }) => {
-      state.courses = state.courses.filter((c) => c._id !== payload);
-    },
+    }
   },
 });
 
 export const {
+  setCourses,
   setEditingCourse,
-  addCourse,
-  updateCourse,
-  deleteCourse,
+  clearEditingCourse,
 } = coursesSlice.actions;
 
 export default coursesSlice.reducer;

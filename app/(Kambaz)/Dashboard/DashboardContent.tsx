@@ -1,284 +1,179 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Row, Col, Card, Button, FormControl } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 
-import {
-  addCourse,
-  updateCourse,
-  deleteCourse,
-  setEditingCourse,
-} from "../Courses/reducer";
+import { setCourses as setCoursesRedux } from "../Courses/reducer";
+import * as coursesClient from "../Courses/client";
 
-import {
-  toggleShowAll,
-  enroll,
-  unenroll,
-} from "../Enrollments/reducer";
+import * as enrollClient from "../Enrollments/client";         
+import { setEnrollments } from "../Enrollments/reducer";      
 
 export default function DashboardContent() {
   const dispatch = useDispatch();
 
-  const { courses, editingCourse } = useSelector((s: any) => s.coursesReducer);
   const { currentUser } = useSelector((s: any) => s.accountReducer);
-  const { enrollments, showAll } = useSelector((s: any) => s.enrollmentsReducer);
 
-  useEffect(() => {
-    dispatch(setEditingCourse(null));
-  }, [dispatch]);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [course, setCourse] = useState<any>(null);
 
   const role = currentUser?.role;
   const isAdmin = role === "ADMIN";
   const isFaculty = role === "FACULTY";
+  const isStudent = role === "STUDENT" || role === "USER";
 
-  const isEnrolled = (cid: string) =>
-    enrollments.some(
-      (e: any) => e.user === currentUser?._id && e.course === cid
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const loadCourses = async () => {
+      if (isAdmin) {
+        const all = await coursesClient.fetchAllCourses();
+        setCourses(all);
+      } else {
+        const mine = await coursesClient.findMyCourses();
+        setCourses(mine);
+      }
+    };
+
+    loadCourses();
+  }, [currentUser]);
+
+  const beginEdit = (c: any) => setCourse({ ...c });
+
+  const onAddNewCourse = async () => {
+    if (!currentUser) return;
+
+    const newCourse = await coursesClient.createCourse({
+      ...course,
+      creator: currentUser._id,
+    });
+
+    const updated = [...courses, newCourse];
+    setCourses(updated);
+
+    dispatch(setCoursesRedux(updated));
+
+    const myEnrollments = await enrollClient.findMyEnrollments();
+    dispatch(setEnrollments(myEnrollments));
+
+    setCourse(null);
+  };
+
+  const onUpdateCourse = async () => {
+    const updatedCourse = await coursesClient.updateCourse(course);
+
+    const updatedLocal = courses.map((c) =>
+      c._id === updatedCourse._id ? updatedCourse : c
     );
+    setCourses(updatedLocal);
 
-  const visibleCourses =
-    !currentUser
-      ? []
-      : isAdmin
-      ? courses
-      : showAll
-      ? courses
-      : courses.filter((c: any) => isEnrolled(c._id));
+    dispatch(setCoursesRedux(updatedLocal));
+
+    setCourse(null);
+  };
+
+  const onDeleteCourse = async (courseId: string) => {
+    await coursesClient.deleteCourse(courseId);
+
+    const updatedLocal = courses.filter((c) => c._id !== courseId);
+    setCourses(updatedLocal);
+    dispatch(setCoursesRedux(updatedLocal));
+  };
 
   return (
     <div id="wd-dashboard" className="p-4">
-
-      <div className="d-flex justify-content-between align-items-center">
-        <h1>Dashboard</h1>
-
-        {currentUser && (
-          <Button
-            className="btn btn-primary"
-            onClick={() => dispatch(toggleShowAll())}
-          >
-            {showAll ? "Show My Courses" : "Show All Courses"}
-          </Button>
-        )}
-      </div>
-
+      <h1>Dashboard</h1>
       <hr />
 
       {(isAdmin || isFaculty) && (
         <>
-          <h5 className="d-flex justify-content-between align-items-center">
-            <span>
-              {editingCourse
-                ? editingCourse._id === "new"
-                  ? "New Course"
-                  : "Edit Course"
-                : "New Course"}
-            </span>
+          <h4>{course ? "Edit Course" : "Add New Course"}</h4>
 
-            <div className="d-flex gap-2">
+          <FormControl
+            className="mb-2"
+            placeholder="Course Name"
+            value={course?.name || ""}
+            onChange={(e) =>
+              setCourse({ ...course, name: e.target.value })
+            }
+          />
 
-              {editingCourse && editingCourse._id !== "new" && (
-                <Button
-                  className="btn btn-warning"
-                  onClick={() => dispatch(updateCourse(editingCourse))}
-                >
-                  Update
-                </Button>
-              )}
+          <FormControl
+            className="mb-2"
+            placeholder="Course Description"
+            as="textarea"
+            rows={3}
+            value={course?.description || ""}
+            onChange={(e) =>
+              setCourse({ ...course, description: e.target.value })
+            }
+          />
 
-              {editingCourse && editingCourse._id === "new" && (
-                <Button
-                  className="btn btn-success"
-                  onClick={() => dispatch(addCourse(editingCourse))}
-                >
-                  Create
-                </Button>
-              )}
-
-              {!editingCourse && (
-                <Button
-                  className="btn btn-primary"
-                  onClick={() =>
-                    dispatch(
-                      setEditingCourse({
-                        _id: "new",
-                        name: "",
-                        description: "",
-                        image: "/images/reactjs.jpg",
-                      })
-                    )
-                  }
-                >
-                  Add
-                </Button>
-              )}
-            </div>
-          </h5>
-
-          <br />
-
-          {editingCourse && (
-            <>
-              <FormControl
-                className="mb-2"
-                value={editingCourse.name}
-                onChange={(e) =>
-                  dispatch(
-                    setEditingCourse({
-                      ...editingCourse,
-                      name: e.target.value,
-                    })
-                  )
-                }
-                placeholder="Course Name"
-              />
-
-              <FormControl
-                className="mb-2"
-                as="textarea"
-                rows={3}
-                value={editingCourse.description}
-                onChange={(e) =>
-                  dispatch(
-                    setEditingCourse({
-                      ...editingCourse,
-                      description: e.target.value,
-                    })
-                  )
-                }
-                placeholder="Course Description"
-              />
-
-              <hr />
-            </>
+          {!course?._id && (
+            <Button onClick={onAddNewCourse} className="btn btn-primary mb-4">
+              Add
+            </Button>
           )}
+
+          {course?._id && (
+            <Button onClick={onUpdateCourse} className="btn btn-secondary mb-4">
+              Update
+            </Button>
+          )}
+
+          <hr />
         </>
       )}
 
-      <h2>
-        {isAdmin
-          ? `All Courses (${visibleCourses.length})`
-          : showAll
-          ? `All Courses (${visibleCourses.length})`
-          : `My Courses (${visibleCourses.length})`}
-      </h2>
-
-      <hr />
-
       <Row xs={1} md={5} className="g-4">
-        {visibleCourses.map((course: any) => (
-          <Col key={course._id} style={{ width: 300 }}>
+        {courses.map((c: any) => (
+          <Col key={c._id} style={{ width: 300 }}>
             <Card>
               <Link
-                href={`/Courses/${course._id}/Home`}
+                href={`/Courses/${c._id}/Home`}
                 className="text-decoration-none text-dark"
               >
-                <Card.Img src={course.image || "/images/reactjs.jpg"} height={160} />
+                <Card.Img src={"/images/reactjs.jpg"} height={160} />
 
                 <Card.Body>
-                  <Card.Title className="text-nowrap overflow-hidden">
-                    {course.name}
-                  </Card.Title>
+                  <Card.Title>{c.name}</Card.Title>
 
                   <Card.Text
                     className="overflow-hidden"
                     style={{ height: 100 }}
                   >
-                    {course.description}
+                    {c.description}
                   </Card.Text>
 
-                  <div className="d-flex justify-content-between align-items-center">
-
-                    <Button className="btn btn-primary">Go</Button>
-
-                    {isAdmin && (
-                      <div className="d-flex gap-2">
-                        <Button
-                          className="btn btn-warning"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            dispatch(setEditingCourse(course));
-                          }}
-                        >
-                          Edit
-                        </Button>
-
-                        <Button
-                          className="btn btn-danger"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            dispatch(deleteCourse(course._id));
-                          }}
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    )}
-
-                    {isFaculty && isEnrolled(course._id) && (
-                      <div className="d-flex gap-2">
-                        <Button
-                          className="btn btn-warning"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            dispatch(setEditingCourse(course));
-                          }}
-                        >
-                          Edit
-                        </Button>
-
-                        <Button
-                          className="btn btn-danger"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            dispatch(deleteCourse(course._id));
-                          }}
-                        >
-                          Delete
-                        </Button>
-                      </div>
-                    )}
-
-                    {!isAdmin && (
-                      <div>
-                        {isEnrolled(course._id) ? (
-                          <Button
-                            className="btn btn-danger"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              dispatch(
-                                unenroll({
-                                  user: currentUser._id,
-                                  course: course._id,
-                                })
-                              );
-                            }}
-                          >
-                            Unenroll
-                          </Button>
-                        ) : (
-                          <Button
-                            className="btn btn-success"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              dispatch(
-                                enroll({
-                                  user: currentUser._id,
-                                  course: course._id,
-                                })
-                              );
-                            }}
-                          >
-                            Enroll
-                          </Button>
-                        )}
-                      </div>
-                    )}
-
-                  </div>
+                  <Button className="btn btn-primary">Go</Button>
                 </Card.Body>
               </Link>
+
+              {(isAdmin || isFaculty) && (
+                <div className="d-flex gap-2 m-2">
+                  <Button
+                    className="btn btn-warning"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      beginEdit(c);
+                    }}
+                  >
+                    Edit
+                  </Button>
+
+                  <Button
+                    className="btn btn-danger"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onDeleteCourse(c._id);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              )}
             </Card>
           </Col>
         ))}
