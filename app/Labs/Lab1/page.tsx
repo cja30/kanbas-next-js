@@ -24,6 +24,12 @@ export default function Lab1() {
           <li>
             <Link href="/Labs/Lab3" id="wd-lab3-link">Lab 3</Link>
           </li>
+          <li>
+            <Link href="/Labs/Lab4" id="wd-lab4-link">Lab 4</Link>
+          </li>
+          <li>
+            <Link href="/Labs/Lab5" id="wd-lab5-link">Lab 5</Link>
+          </li>
         </ul>
 
         <h4>Kambaz Application</h4>
@@ -49,6 +55,29 @@ export default function Lab1() {
             GitHub repository (wd-github)
           </a>
         </p>
+
+        <h4>Node Server</h4>
+          <p>
+            <a
+              href="https://github.com/cja30/kambaz-node-server-app"
+              id="wd-node-github"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Node Server GitHub Repository
+            </a>
+          </p>
+
+          <p>
+            <a
+              href="https://kambaz-node-server-app-wb35.onrender.com"
+              id="wd-node-render"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Remote Node Server on Render
+            </a>
+          </p>
       </section>
 
       <h3>HTML Examples</h3>
