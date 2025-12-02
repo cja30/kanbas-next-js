@@ -3,13 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  setModules,
-  addModule,
-  deleteModule,
-  editModule,
-  updateModule,
-} from "./reducer";
+import { setModules, updateModule, editModule } from "./reducer";
 
 import * as client from "../../client";
 
@@ -24,6 +18,8 @@ export default function Modules() {
   const { cid } = useParams<{ cid: string }>();
   const dispatch = useDispatch();
 
+  const cidNorm = cid.toLowerCase();
+
   const { currentUser } = useSelector((s: any) => s.accountReducer);
   const enrollments = useSelector((s: any) => s.enrollmentsReducer.enrollments);
   const { modules } = useSelector((state: any) => state.modulesReducer);
@@ -32,7 +28,7 @@ export default function Modules() {
   const isAdmin = role === "ADMIN";
   const isFaculty = role === "FACULTY";
 
-  const enrolled = enrollments.includes(cid);
+  const enrolled = enrollments.includes(cidNorm);
 
   const canEdit = isAdmin || (isFaculty && enrolled);
 
@@ -40,7 +36,7 @@ export default function Modules() {
 
   useEffect(() => {
     const fetchModules = async () => {
-      const data = await client.findModulesForCourse(cid as string);
+      const data = await client.findModulesForCourse(cid);
       dispatch(setModules(data));
     };
     fetchModules();

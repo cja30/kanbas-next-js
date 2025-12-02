@@ -1,15 +1,16 @@
 "use client";
 
+import { useParams, useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { FaAlignJustify } from "react-icons/fa6";
 import CourseNavigation from "./Navigation";
 import ProtectedRoute from "../../Account/ProtectedRoute";
 
-export default function CourseLayout({ children, params }) {
+export default function CourseLayout({ children }) {
   const router = useRouter();
-  const { cid } = params;
+  const { cid } = useParams();
+  const cidNorm = cid.toLowerCase();
 
   const currentUser = useSelector((s: any) => s.accountReducer.currentUser);
   const enrollments = useSelector((s: any) => s.enrollmentsReducer.enrollments);
@@ -17,28 +18,30 @@ export default function CourseLayout({ children, params }) {
   if (currentUser === undefined || enrollments === undefined) return null;
 
   useEffect(() => {
-    if (currentUser === undefined || enrollments === undefined) return;
-
     if (!currentUser) {
       router.push("/Account/Signin");
       return;
     }
 
-    const role = currentUser.role;
+    const role = currentUser.role?.toUpperCase();
     const isAdmin = role === "ADMIN";
     const isFaculty = role === "FACULTY";
     const isStudent = role === "STUDENT" || role === "USER";
 
-    const isEnrolled = enrollments.includes(cid);
+    const isEnrolled = enrollments.includes(cidNorm);
 
-    if (isAdmin) return;
-    if (isFaculty) return;
+    if (isAdmin || isFaculty) return;
 
     if (isStudent && !isEnrolled) {
       router.push("/Courses");
       return;
     }
-  }, [currentUser, enrollments, cid, router]);
+  }, [currentUser, enrollments, cidNorm, router]);
+
+  console.log("cidNorm:", cidNorm);
+  console.log("enrollments from redux:", enrollments);
+  console.log("includes?", enrollments.includes(cidNorm));
+
 
   return (
     <ProtectedRoute>

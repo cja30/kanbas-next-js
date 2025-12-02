@@ -1,5 +1,4 @@
 "use client";
-
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -34,7 +33,7 @@ const modulesSlice = createSlice({
       state.modules = state.modules.map((module) =>
         module._id === action.payload
           ? { ...module, editing: true }
-          : module
+          : { ...module, editing: false }
       );
     },
   },

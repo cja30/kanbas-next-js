@@ -17,14 +17,15 @@ export default function AssignmentEditor() {
   const router = useRouter();
   const dispatch = useDispatch();
 
+  const cidNorm = cid.toLowerCase();
+
   const currentUser = useSelector((s: any) => s.accountReducer.currentUser);
   const enrollments = useSelector((s: any) => s.enrollmentsReducer.enrollments);
   const assignments = useSelector((s: any) => s.assignmentsReducer.assignments);
 
-  const role = currentUser?.role;
+  const role = currentUser?.role?.toUpperCase();
   const isAdmin = role === "ADMIN";
-
-  const isFacultyEnrolled = role === "FACULTY" && enrollments.includes(cid);
+  const isFacultyEnrolled = role === "FACULTY" && enrollments.includes(cidNorm);
 
   const existing = assignments.find((a: any) => a._id === aid) || null;
 
@@ -42,10 +43,12 @@ export default function AssignmentEditor() {
   );
 
   useEffect(() => {
+    if (!currentUser) return;
+
     if (!isAdmin && !isFacultyEnrolled) {
       router.push(`/Courses/${cid}/Assignments`);
     }
-  }, [isAdmin, isFacultyEnrolled, cid, router]);
+  }, [currentUser, isAdmin, isFacultyEnrolled, cid, router]);
 
   const save = async () => {
     if (aid === "new") {

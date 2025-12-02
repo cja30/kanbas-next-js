@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Row, Col, Card, Button } from "react-bootstrap";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import * as enrollClient from "../Enrollments/client";
+import { enrollLocal, unenrollLocal } from "../Enrollments/reducer";
 
 export default function CoursesListScreen() {
+  const dispatch = useDispatch();
   const { courses } = useSelector((s: any) => s.coursesReducer);
   const currentUser = useSelector((s: any) => s.accountReducer.currentUser);
 
@@ -25,7 +27,9 @@ export default function CoursesListScreen() {
         setEnrolledCourseIds([]);
       } else {
         const enrollments = await enrollClient.findMyEnrollments();
-        setEnrolledCourseIds(enrollments.map((e: any) => e.course));
+        setEnrolledCourseIds(
+          enrollments.map((e: any) => e.course.toLowerCase())
+        );
       }
     };
 
@@ -33,13 +37,26 @@ export default function CoursesListScreen() {
   }, [currentUser, isAdmin]);
 
   const enroll = async (courseId: string) => {
-    await enrollClient.enroll(courseId);
-    setEnrolledCourseIds([...enrolledCourseIds, courseId]);
+    const result = await enrollClient.enroll(courseId);
+    const normalizedId = result.course.toLowerCase();
+
+    // Update Redux
+    dispatch(enrollLocal(result));
+
+    // Update local state
+    setEnrolledCourseIds([...enrolledCourseIds, normalizedId]);
   };
 
   const unenroll = async (courseId: string) => {
     await enrollClient.unenroll(courseId);
-    setEnrolledCourseIds(enrolledCourseIds.filter((id) => id !== courseId));
+    const normalizedId = courseId.toLowerCase();
+
+    // Update Redux
+    dispatch(unenrollLocal(normalizedId));
+
+    setEnrolledCourseIds(
+      enrolledCourseIds.filter((id) => id !== normalizedId)
+    );
   };
 
   return (
@@ -49,12 +66,12 @@ export default function CoursesListScreen() {
 
       <Row xs={1} md={5} className="g-4">
         {courses.map((course: any) => {
-          const isEnrolled = enrolledCourseIds.includes(course._id);
+          const normalized = course._id.toLowerCase();
+          const isEnrolled = enrolledCourseIds.includes(normalized);
 
           const showGo =
-            isAdmin ||                  
-            isFaculty ||               
-            isEnrolled;               
+            isAdmin ||
+            isEnrolled;
 
           return (
             <Col key={course._id} style={{ width: 300 }}>
@@ -86,7 +103,9 @@ export default function CoursesListScreen() {
 
                     {!isAdmin && (
                       <Button
-                        className={isEnrolled ? "btn btn-warning" : "btn btn-success"}
+                        className={
+                          isEnrolled ? "btn btn-warning" : "btn btn-success"
+                        }
                         onClick={async (e) => {
                           e.preventDefault();
                           if (isEnrolled) await unenroll(course._id);
@@ -96,7 +115,6 @@ export default function CoursesListScreen() {
                         {isEnrolled ? "Unenroll" : "Enroll"}
                       </Button>
                     )}
-
                   </Card.Body>
                 </Link>
               </Card>

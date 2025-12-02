@@ -6,15 +6,17 @@ const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER;
 const USERS_API = `${HTTP_SERVER}/api/users/current`;
 
 export const enroll = async (courseId: string) => {
+  const id = courseId.toString();
   const { data } = await axiosWithCredentials.post(
-    `${USERS_API}/courses/${courseId}/enroll`
+    `${USERS_API}/courses/${id}/enroll`
   );
   return data;
 };
 
 export const unenroll = async (courseId: string) => {
+  const id = courseId.toString();
   const { data } = await axiosWithCredentials.delete(
-    `${USERS_API}/courses/${courseId}/enroll`
+    `${USERS_API}/courses/${id}/enroll`
   );
   return data;
 };

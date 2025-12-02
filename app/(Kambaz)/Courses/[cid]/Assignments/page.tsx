@@ -24,6 +24,8 @@ export default function AssignmentsPage() {
   const dispatch = useDispatch();
   const { cid } = useParams<RouteParams>();
 
+  const cidNorm = cid.toLowerCase();
+
   const assignments = useSelector((s: any) => s.assignmentsReducer.assignments);
   const currentUser = useSelector((s: any) => s.accountReducer.currentUser);
   const enrollments = useSelector((s: any) => s.enrollmentsReducer.enrollments);
@@ -32,7 +34,7 @@ export default function AssignmentsPage() {
   const isAdmin = role === "ADMIN";
   const isFaculty = role === "FACULTY";
 
-  const enrolled = enrollments.includes(cid);
+  const enrolled = enrollments.includes(cidNorm);
 
   const canEdit = isAdmin || (isFaculty && enrolled);
 
@@ -49,7 +51,7 @@ export default function AssignmentsPage() {
     dispatch(setAssignments(assignments.filter((a: any) => a._id !== id)));
   };
 
-  const items = assignments.filter((a: any) => a.course === cid);
+  const items = assignments.filter((a: any) => a.course.toLowerCase() === cidNorm);
 
   return (
     <div id="wd-assignments" className="p-3 pe-3">
