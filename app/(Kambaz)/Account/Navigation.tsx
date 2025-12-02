@@ -7,7 +7,13 @@ export default function AccountNavigation() {
   const { currentUser } = useSelector((state: any) => state.accountReducer);
 
   const links = currentUser
-    ? [{ label: "Profile", path: "/Account/Profile" }]
+    ? [
+        { label: "Profile", path: "/Account/Profile" },
+
+        ...(currentUser.role === "ADMIN"
+          ? [{ label: "Users", path: "/Account/Users" }]
+          : []),
+      ]
     : [
         { label: "Signin", path: "/Account/Signin" },
         { label: "Signup", path: "/Account/Signup" },

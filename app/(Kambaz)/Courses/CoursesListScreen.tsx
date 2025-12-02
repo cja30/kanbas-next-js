@@ -40,10 +40,8 @@ export default function CoursesListScreen() {
     const result = await enrollClient.enroll(courseId);
     const normalizedId = result.course.toLowerCase();
 
-    // Update Redux
     dispatch(enrollLocal(result));
 
-    // Update local state
     setEnrolledCourseIds([...enrolledCourseIds, normalizedId]);
   };
 
@@ -51,7 +49,6 @@ export default function CoursesListScreen() {
     await enrollClient.unenroll(courseId);
     const normalizedId = courseId.toLowerCase();
 
-    // Update Redux
     dispatch(unenrollLocal(normalizedId));
 
     setEnrolledCourseIds(
