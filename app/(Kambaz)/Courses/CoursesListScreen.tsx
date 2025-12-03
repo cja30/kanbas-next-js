@@ -18,8 +18,6 @@ export default function CoursesListScreen() {
 
   const role = currentUser.role;
   const isAdmin = role === "ADMIN";
-  const isFaculty = role === "FACULTY";
-  const isStudent = role === "STUDENT" || role === "USER";
 
   useEffect(() => {
     const load = async () => {
@@ -27,8 +25,9 @@ export default function CoursesListScreen() {
         setEnrolledCourseIds([]);
       } else {
         const enrollments = await enrollClient.findMyEnrollments();
+        // API returns ARRAY OF COURSE DOCUMENTS
         setEnrolledCourseIds(
-          enrollments.map((e: any) => e.course.toLowerCase())
+          enrollments.map((course: any) => course._id.toLowerCase())
         );
       }
     };
@@ -36,24 +35,30 @@ export default function CoursesListScreen() {
     load();
   }, [currentUser, isAdmin]);
 
+  // ENROLL
   const enroll = async (courseId: string) => {
-    const result = await enrollClient.enroll(courseId);
-    const normalizedId = result.course.toLowerCase();
+    const course = await enrollClient.enroll(courseId);
+    const normalized = course._id.toLowerCase();
 
-    dispatch(enrollLocal(result));
+    // update Redux
+    dispatch(enrollLocal(normalized));
 
-    setEnrolledCourseIds([...enrolledCourseIds, normalizedId]);
+    // ✅ use functional update to avoid stale state
+    setEnrolledCourseIds((prev) =>
+      prev.includes(normalized) ? prev : [...prev, normalized]
+    );
   };
 
+  // UNENROLL
   const unenroll = async (courseId: string) => {
     await enrollClient.unenroll(courseId);
-    const normalizedId = courseId.toLowerCase();
+    const normalized = courseId.toLowerCase();
 
-    dispatch(unenrollLocal(normalizedId));
+    // update Redux
+    dispatch(unenrollLocal(normalized));
 
-    setEnrolledCourseIds(
-      enrolledCourseIds.filter((id) => id !== normalizedId)
-    );
+    // ✅ functional update
+    setEnrolledCourseIds((prev) => prev.filter((id) => id !== normalized));
   };
 
   return (
@@ -66,9 +71,7 @@ export default function CoursesListScreen() {
           const normalized = course._id.toLowerCase();
           const isEnrolled = enrolledCourseIds.includes(normalized);
 
-          const showGo =
-            isAdmin ||
-            isEnrolled;
+          const showGo = isAdmin || isEnrolled;
 
           return (
             <Col key={course._id} style={{ width: 300 }}>
@@ -93,9 +96,7 @@ export default function CoursesListScreen() {
                     </Card.Text>
 
                     {showGo && (
-                      <Button className="btn btn-primary me-2">
-                        Go
-                      </Button>
+                      <Button className="btn btn-primary me-2">Go</Button>
                     )}
 
                     {!isAdmin && (

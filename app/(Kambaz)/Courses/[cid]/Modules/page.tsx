@@ -28,9 +28,14 @@ export default function Modules() {
   const isAdmin = role === "ADMIN";
   const isFaculty = role === "FACULTY";
 
-  const enrolled = enrollments.includes(cidNorm);
+  // 🔹 local state that mirrors Redux enrollments for this course
+  const [enrolledState, setEnrolledState] = useState(false);
 
-  const canEdit = isAdmin || (isFaculty && enrolled);
+  useEffect(() => {
+    setEnrolledState(enrollments.includes(cidNorm));
+  }, [enrollments, cidNorm]);
+
+  const canEdit = isAdmin || (isFaculty && enrolledState);
 
   const [moduleName, setModuleName] = useState("");
 
@@ -51,16 +56,17 @@ export default function Modules() {
   };
 
   const onRemoveModule = async (moduleId: string) => {
-    await client.deleteModule(moduleId);
+    await client.deleteModule(cid, moduleId);
     dispatch(setModules(modules.filter((m: any) => m._id !== moduleId)));
   };
 
   const onUpdateModule = async (module: any) => {
-    await client.updateModule(module);
-    const updatedList = modules.map((m: any) =>
+    await client.updateModule(cid, module);
+
+    const newModules = modules.map((m: any) =>
       m._id === module._id ? module : m
     );
-    dispatch(setModules(updatedList));
+    dispatch(setModules(newModules));
   };
 
   return (
@@ -73,7 +79,10 @@ export default function Modules() {
         />
       )}
 
-      <br /><br /><br /><br />
+      <br />
+      <br />
+      <br />
+      <br />
 
       <ListGroup id="wd-modules" className="rounded-0">
         {modules.length === 0 && (
@@ -98,7 +107,9 @@ export default function Modules() {
                     className="w-50 d-inline-block"
                     value={module.name}
                     onChange={(e) =>
-                      dispatch(updateModule({ ...module, name: e.target.value }))
+                      dispatch(
+                        updateModule({ ...module, name: e.target.value })
+                      )
                     }
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {

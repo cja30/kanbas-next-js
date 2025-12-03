@@ -1,49 +1,53 @@
 "use client";
 
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import * as client from "./client";
 import { setAssignments } from "./reducer";
 
+import Link from "next/link";
 import Button from "react-bootstrap/Button";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
 import ListGroup from "react-bootstrap/ListGroup";
-import Badge from "react-bootstrap/Badge";
 
 import { FaSearch, FaPlus, FaTrash } from "react-icons/fa";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { BsGripVertical } from "react-icons/bs";
 
-type RouteParams = { cid: string };
+type Params = { cid: string };
 
 export default function AssignmentsPage() {
   const dispatch = useDispatch();
-  const { cid } = useParams<RouteParams>();
-
-  const cidNorm = cid.toLowerCase();
+  const { cid } = useParams<Params>();
 
   const assignments = useSelector((s: any) => s.assignmentsReducer.assignments);
   const currentUser = useSelector((s: any) => s.accountReducer.currentUser);
   const enrollments = useSelector((s: any) => s.enrollmentsReducer.enrollments);
 
+  const cidNorm = cid.toLowerCase();
+
   const role = currentUser?.role;
   const isAdmin = role === "ADMIN";
   const isFaculty = role === "FACULTY";
 
-  const enrolled = enrollments.includes(cidNorm);
-
-  const canEdit = isAdmin || (isFaculty && enrolled);
+  // 🔹 local enrolled flag that updates when Redux enrollments change
+  const [enrolledState, setEnrolledState] = useState(false);
 
   useEffect(() => {
-    const fetchAssignments = async () => {
+    setEnrolledState(enrollments.includes(cidNorm));
+  }, [enrollments, cidNorm]);
+
+  const canEdit = isAdmin || (isFaculty && enrolledState);
+
+  useEffect(() => {
+    const load = async () => {
       const data = await client.findAssignmentsForCourse(cid);
       dispatch(setAssignments(data));
     };
-    fetchAssignments();
+    load();
   }, [cid, dispatch]);
 
   const onDelete = async (id: string) => {
@@ -51,10 +55,12 @@ export default function AssignmentsPage() {
     dispatch(setAssignments(assignments.filter((a: any) => a._id !== id)));
   };
 
-  const items = assignments.filter((a: any) => a.course.toLowerCase() === cidNorm);
+  const items = assignments.filter(
+    (a: any) => a.course.toLowerCase() === cidNorm
+  );
 
   return (
-    <div id="wd-assignments" className="p-3 pe-3">
+    <div className="p-3">
       <div className="d-flex align-items-center mb-3">
         <InputGroup className="me-auto" style={{ maxWidth: 420 }}>
           <span className="input-group-text bg-white">
@@ -64,18 +70,12 @@ export default function AssignmentsPage() {
         </InputGroup>
 
         {canEdit && (
-          <>
-            <Button variant="secondary" size="lg" className="me-2">
-              <FaPlus className="me-2" /> Group
-            </Button>
-
-            <Link
-              href={`/Courses/${cid}/Assignments/new`}
-              className="btn btn-danger btn-lg"
-            >
-              <FaPlus className="me-2" /> Assignment
-            </Link>
-          </>
+          <Link
+            href={`/Courses/${cid}/Assignments/new`}
+            className="btn btn-danger btn-lg"
+          >
+            <FaPlus className="me-2" /> Assignment
+          </Link>
         )}
       </div>
 
@@ -85,20 +85,12 @@ export default function AssignmentsPage() {
             <div className="d-flex align-items-center">
               <BsGripVertical className="me-2 fs-4" />
               <span className="fw-semibold">ASSIGNMENTS</span>
-              <Badge bg="light" text="dark" className="ms-2">
-                40% of Total
-              </Badge>
             </div>
 
             {canEdit && (
-              <div>
-                <Button size="sm" variant="light" className="border-0 me-1">
-                  <FaPlus />
-                </Button>
-                <Button size="sm" variant="light" className="border-0">
-                  <IoEllipsisVertical />
-                </Button>
-              </div>
+              <Button size="sm" variant="light" className="border-0">
+                <IoEllipsisVertical />
+              </Button>
             )}
           </div>
 
@@ -117,14 +109,9 @@ export default function AssignmentsPage() {
                     </Link>
 
                     <div className="small text-muted">
-                      {a.avail && (
-                        <>
-                          <strong>Not available until</strong> {a.avail} |
-                        </>
-                      )}
                       {a.due && (
                         <>
-                          <strong>Due</strong> {a.due} |
+                          <strong>Due:</strong> {a.due} |{" "}
                         </>
                       )}
                       {typeof a.pts === "number" ? `${a.pts} pts` : ""}
@@ -136,9 +123,7 @@ export default function AssignmentsPage() {
                       className="text-danger ms-3"
                       style={{ cursor: "pointer" }}
                       onClick={() => {
-                        if (confirm("Delete assignment?")) {
-                          onDelete(a._id);
-                        }
+                        if (confirm("Delete assignment?")) onDelete(a._id);
                       }}
                     />
                   )}

@@ -17,13 +17,13 @@ export default function AssignmentEditor() {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const cidNorm = cid.toLowerCase();
-
+  const assignments = useSelector((s: any) => s.assignmentsReducer.assignments);
   const currentUser = useSelector((s: any) => s.accountReducer.currentUser);
   const enrollments = useSelector((s: any) => s.enrollmentsReducer.enrollments);
-  const assignments = useSelector((s: any) => s.assignmentsReducer.assignments);
 
   const role = currentUser?.role?.toUpperCase();
+  const cidNorm = cid.toLowerCase();
+
   const isAdmin = role === "ADMIN";
   const isFacultyEnrolled = role === "FACULTY" && enrollments.includes(cidNorm);
 
@@ -44,7 +44,6 @@ export default function AssignmentEditor() {
 
   useEffect(() => {
     if (!currentUser) return;
-
     if (!isAdmin && !isFacultyEnrolled) {
       router.push(`/Courses/${cid}/Assignments`);
     }
@@ -71,7 +70,7 @@ export default function AssignmentEditor() {
   };
 
   return (
-    <div id="wd-assignment-editor" className="p-3">
+    <div className="p-3">
       <h2 className="h4 mb-4">
         {aid === "new" ? "New Assignment" : assignment.title}
       </h2>
@@ -81,9 +80,7 @@ export default function AssignmentEditor() {
           <Form.Label>Assignment Name</Form.Label>
           <Form.Control
             value={assignment.title}
-            onChange={(e) =>
-              setAssignment({ ...assignment, title: e.target.value })
-            }
+            onChange={(e) => setAssignment({ ...assignment, title: e.target.value })}
           />
         </Form.Group>
 
@@ -115,9 +112,7 @@ export default function AssignmentEditor() {
           <Form.Control
             type="datetime-local"
             value={assignment.due}
-            onChange={(e) =>
-              setAssignment({ ...assignment, due: e.target.value })
-            }
+            onChange={(e) => setAssignment({ ...assignment, due: e.target.value })}
           />
         </Form.Group>
 
@@ -126,9 +121,7 @@ export default function AssignmentEditor() {
           <Form.Control
             type="datetime-local"
             value={assignment.avail}
-            onChange={(e) =>
-              setAssignment({ ...assignment, avail: e.target.value })
-            }
+            onChange={(e) => setAssignment({ ...assignment, avail: e.target.value })}
           />
         </Form.Group>
 
@@ -137,9 +130,7 @@ export default function AssignmentEditor() {
           <Form.Control
             type="datetime-local"
             value={assignment.until}
-            onChange={(e) =>
-              setAssignment({ ...assignment, until: e.target.value })
-            }
+            onChange={(e) => setAssignment({ ...assignment, until: e.target.value })}
           />
         </Form.Group>
 
@@ -147,8 +138,7 @@ export default function AssignmentEditor() {
           <Button variant="light" onClick={() => router.back()}>
             Cancel
           </Button>
-
-          <Button variant="danger" onClick={save} id="wd-save-assignment">
+          <Button variant="danger" onClick={save}>
             Save
           </Button>
         </div>

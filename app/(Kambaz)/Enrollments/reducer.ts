@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  enrollments: [], 
+  enrollments: [],
 };
 
 const enrollmentsSlice = createSlice({
@@ -9,20 +9,24 @@ const enrollmentsSlice = createSlice({
   initialState,
   reducers: {
     setEnrollments: (state, { payload }) => {
-      state.enrollments = payload.map((e: any) =>
-        e.course.toString().toLowerCase().trim()
+      state.enrollments = payload.map((course: any) =>
+        course._id.toLowerCase().trim()
       );
     },
 
     enrollLocal: (state, { payload }) => {
-      const courseId = payload.course.toString().toLowerCase().trim();
+      const courseId =
+        typeof payload === "string"
+          ? payload.toLowerCase().trim()
+          : payload._id.toLowerCase().trim();
+
       if (!state.enrollments.includes(courseId)) {
         state.enrollments.push(courseId);
       }
     },
 
     unenrollLocal: (state, { payload }) => {
-      const courseId = payload.toString().toLowerCase().trim();
+      const courseId = payload.toLowerCase().trim();
       state.enrollments = state.enrollments.filter(
         (id: string) => id !== courseId
       );
