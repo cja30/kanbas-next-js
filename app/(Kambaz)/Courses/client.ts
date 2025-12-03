@@ -2,9 +2,8 @@ import axios from "axios";
 
 const axiosWithCredentials = axios.create({ withCredentials: true });
 
-const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER;
+export const HTTP_SERVER = process.env.NEXT_PUBLIC_HTTP_SERVER;
 const COURSES_API = `${HTTP_SERVER}/api/courses`;
-const MODULES_API = `${HTTP_SERVER}/api/modules`;
 const USERS_API = `${HTTP_SERVER}/api/users`;
 
 export const fetchAllCourses = async () => {
@@ -54,14 +53,14 @@ export const findModulesForCourse = async (courseId: string) => {
 
 export const deleteModule = async (moduleId: string) => {
   const { data } = await axiosWithCredentials.delete(
-    `${MODULES_API}/${moduleId}`
+    `${HTTP_SERVER}/api/modules/${moduleId}`
   );
   return data;
 };
 
 export const updateModule = async (module: any) => {
   const { data } = await axiosWithCredentials.put(
-    `${MODULES_API}/${module._id}`,
+    `${HTTP_SERVER}/api/modules/${module._id}`,
     module
   );
   return data;

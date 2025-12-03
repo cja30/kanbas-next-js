@@ -21,7 +21,13 @@ const coursesSlice = createSlice({
 
     clearEditingCourse: (state) => {
       state.editingCourse = null;
-    }
+    },
+
+    updateCourseLocal: (state, { payload }) => {
+      state.courses = state.courses.map((course: any) =>
+        course._id === payload._id ? payload : course
+      );
+    },
   },
 });
 
@@ -29,6 +35,8 @@ export const {
   setCourses,
   setEditingCourse,
   clearEditingCourse,
+  updateCourseLocal,  
 } = coursesSlice.actions;
 
 export default coursesSlice.reducer;
+

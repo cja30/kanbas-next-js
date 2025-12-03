@@ -8,8 +8,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { setCourses as setCoursesRedux } from "../Courses/reducer";
 import * as coursesClient from "../Courses/client";
 
-import * as enrollClient from "../Enrollments/client";         
-import { setEnrollments } from "../Enrollments/reducer";      
+import * as enrollClient from "../Enrollments/client";
+import { setEnrollments } from "../Enrollments/reducer";
 
 export default function DashboardContent() {
   const dispatch = useDispatch();
@@ -26,60 +26,47 @@ export default function DashboardContent() {
 
   useEffect(() => {
     if (!currentUser) return;
-
-    const loadCourses = async () => {
-      if (isAdmin) {
-        const all = await coursesClient.fetchAllCourses();
-        setCourses(all);
-      } else {
-        const mine = await coursesClient.findMyCourses();
-        setCourses(mine);
-      }
-    };
-
-    loadCourses();
+    reloadCourses();
   }, [currentUser]);
+
+  const reloadCourses = async () => {
+    if (isAdmin) {
+      const all = await coursesClient.fetchAllCourses();
+      setCourses(all);
+      dispatch(setCoursesRedux(all));
+    } else {
+      const mine = await coursesClient.findMyCourses();
+      setCourses(mine);
+      dispatch(setCoursesRedux(mine));
+
+      const myEnrollments = await enrollClient.findMyEnrollments();
+      dispatch(setEnrollments(myEnrollments));
+    }
+  };
 
   const beginEdit = (c: any) => setCourse({ ...c });
 
   const onAddNewCourse = async () => {
     if (!currentUser) return;
 
-    const newCourse = await coursesClient.createCourse({
+    await coursesClient.createCourse({
       ...course,
       creator: currentUser._id,
     });
 
-    const updated = [...courses, newCourse];
-    setCourses(updated);
-
-    dispatch(setCoursesRedux(updated));
-
-    const myEnrollments = await enrollClient.findMyEnrollments();
-    dispatch(setEnrollments(myEnrollments));
-
+    await reloadCourses();
     setCourse(null);
   };
 
   const onUpdateCourse = async () => {
-    const updatedCourse = await coursesClient.updateCourse(course);
-
-    const updatedLocal = courses.map((c) =>
-      c._id === updatedCourse._id ? updatedCourse : c
-    );
-    setCourses(updatedLocal);
-
-    dispatch(setCoursesRedux(updatedLocal));
-
+    await coursesClient.updateCourse(course);
+    await reloadCourses();
     setCourse(null);
   };
 
   const onDeleteCourse = async (courseId: string) => {
     await coursesClient.deleteCourse(courseId);
-
-    const updatedLocal = courses.filter((c) => c._id !== courseId);
-    setCourses(updatedLocal);
-    dispatch(setCoursesRedux(updatedLocal));
+    await reloadCourses();
   };
 
   return (
@@ -95,9 +82,7 @@ export default function DashboardContent() {
             className="mb-2"
             placeholder="Course Name"
             value={course?.name || ""}
-            onChange={(e) =>
-              setCourse({ ...course, name: e.target.value })
-            }
+            onChange={(e) => setCourse({ ...course, name: e.target.value })}
           />
 
           <FormControl
