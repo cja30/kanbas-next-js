@@ -12,11 +12,9 @@ export default function Session({ children }: { children: any }) {
 
   const loadSession = async () => {
     try {
-      // Load current user
       const currentUser = await client.profile();
       dispatch(setCurrentUser(currentUser));
 
-      // If logged in → load enrollments
       if (currentUser) {
         const enrollments = await enrollClient.findMyEnrollments();
         dispatch(setEnrollments(enrollments));

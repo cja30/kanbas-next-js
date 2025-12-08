@@ -25,7 +25,6 @@ export default function CoursesListScreen() {
         setEnrolledCourseIds([]);
       } else {
         const enrollments = await enrollClient.findMyEnrollments();
-        // API returns ARRAY OF COURSE DOCUMENTS
         setEnrolledCourseIds(
           enrollments.map((course: any) => course._id.toLowerCase())
         );
@@ -35,29 +34,23 @@ export default function CoursesListScreen() {
     load();
   }, [currentUser, isAdmin]);
 
-  // ENROLL
   const enroll = async (courseId: string) => {
     const course = await enrollClient.enroll(courseId);
     const normalized = course._id.toLowerCase();
 
-    // update Redux
     dispatch(enrollLocal(normalized));
 
-    // ✅ use functional update to avoid stale state
     setEnrolledCourseIds((prev) =>
       prev.includes(normalized) ? prev : [...prev, normalized]
     );
   };
 
-  // UNENROLL
   const unenroll = async (courseId: string) => {
     await enrollClient.unenroll(courseId);
     const normalized = courseId.toLowerCase();
 
-    // update Redux
     dispatch(unenrollLocal(normalized));
 
-    // ✅ functional update
     setEnrolledCourseIds((prev) => prev.filter((id) => id !== normalized));
   };
 

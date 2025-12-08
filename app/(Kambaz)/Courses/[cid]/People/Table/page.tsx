@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import PeopleTable from "../Table"; // your PeopleTable component
-import * as coursesClient from "../../../client"; // contains findUsersForCourse()
+import PeopleTable from "../Table";
+import * as coursesClient from "../../../client";
 
 export default function PeopleTablePage() {
   const { cid } = useParams<{ cid: string }>();
