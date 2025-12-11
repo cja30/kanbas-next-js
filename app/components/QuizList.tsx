@@ -37,7 +37,6 @@ function QuizMeta({ quiz }) {
       <div>{due ? `Due ${due.toLocaleString()}` : "No due date"}</div>
       <div>{quiz.questionCount} Questions · {quiz.points} pts</div>
 
-      {/* STUDENT SCORE */}
       {quiz.studentScore !== null && (
         <div className="text-success fw-semibold">
           Score: {quiz.studentScore} pts
@@ -71,14 +70,14 @@ export default function QuizList({ quizzes, cid, refresh }) {
   }
 
   async function deleteQuiz(id) {
-    await fetch(`http://localhost:4000/api/quizzes/${id}`, { method: "DELETE" });
+    await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${id}`, { method: "DELETE" });
     setItems((prev) => prev.filter((q) => q._id !== id));
     refresh();
     setOpenMenu(null);
   }
 
   async function togglePublish(q) {
-    await fetch(`http://localhost:4000/api/quizzes/${q._id}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${q._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ published: !q.published }),

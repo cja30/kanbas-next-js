@@ -18,7 +18,7 @@ export default function QuestionsPage() {
   const [mode, setMode] = useState("list"); 
 
   useEffect(() => {
-    fetch(`http://localhost:4000/api/quizzes/${qid}/questions`)
+    fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}/questions`)
       .then(res => res.json())
       .then(setQuestions);
   }, [qid]);
@@ -46,13 +46,13 @@ export default function QuestionsPage() {
     const exists = questions.find(q => q._id === updated._id);
 
     if (exists) {
-      await fetch(`http://localhost:4000/api/questions/${updated._id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/questions/${updated._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updated),
       });
     } else {
-      await fetch(`http://localhost:4000/api/quizzes/${qid}/questions`, {
+      await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}/questions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updated),
@@ -60,7 +60,7 @@ export default function QuestionsPage() {
     }
 
     const refreshed = await fetch(
-      `http://localhost:4000/api/quizzes/${qid}/questions`
+      `${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}/questions`
     ).then(r => r.json());
 
     setQuestions(refreshed);
@@ -69,7 +69,7 @@ export default function QuestionsPage() {
   }
 
   async function deleteQuestion(id) {
-    await fetch(`http://localhost:4000/api/questions/${id}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/questions/${id}`, {
       method: "DELETE",
     });
 

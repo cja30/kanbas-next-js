@@ -14,7 +14,7 @@ export default function QuizzesPage({ params }) {
   const [quizzes, setQuizzes] = useState([]);
 
   const loadQuizzes = useCallback(async () => {
-    const res = await fetch(`http://localhost:4000/api/courses/${cid}/quizzes?uid=${user?._id}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/courses/${cid}/quizzes?uid=${user?._id}`);
     const data = await res.json();
     setQuizzes(data);
   }, [cid]);
@@ -34,7 +34,7 @@ export default function QuizzesPage({ params }) {
               variant="danger"
               size="lg"
               onClick={async () => {
-                const res = await fetch(`http://localhost:4000/api/courses/${cid}/quizzes`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/courses/${cid}/quizzes`, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({

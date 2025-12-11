@@ -45,10 +45,10 @@ export default function QuizTakePage() {
 
   useEffect(() => {
     async function load() {
-      const quizData = await fetch(`http://localhost:4000/api/quizzes/${qid}`).then(r => r.json());
-      const qsData = await fetch(`http://localhost:4000/api/quizzes/${qid}/questions`).then(r => r.json());
+      const quizData = await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}`).then(r => r.json());
+      const qsData = await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}/questions`).then(r => r.json());
       const latest = await fetch(
-        `http://localhost:4000/api/quizzes/${qid}/attempts/${user._id}/latest`
+        `${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}/attempts/${user._id}/latest`
       ).then(r => r.json());
 
       setQuiz(quizData);
@@ -133,14 +133,14 @@ export default function QuizTakePage() {
     setSubmitted(true);
     setReviewMode(false);
 
-    await fetch(`http://localhost:4000/api/quizzes/${qid}/attempts/${user._id}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}/attempts/${user._id}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ answers, score: total }),
     });
 
     const latest = await fetch(
-      `http://localhost:4000/api/quizzes/${qid}/attempts/${user._id}/latest`
+      `${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}/attempts/${user._id}/latest`
     ).then(r => r.json());
 
     setLatestAttempt(latest);

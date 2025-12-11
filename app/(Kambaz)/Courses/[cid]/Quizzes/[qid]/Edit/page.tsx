@@ -28,7 +28,7 @@ export default function QuizEditorPage() {
 
   useEffect(() => {
     async function loadQuiz() {
-      const res = await fetch(`http://localhost:4000/api/quizzes/${qid}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}`);
       const data = await res.json();
       setQuiz(data);
     }
@@ -38,7 +38,7 @@ export default function QuizEditorPage() {
   useEffect(() => {
     async function loadQuestions() {
       const res = await fetch(
-        `http://localhost:4000/api/quizzes/${qid}/questions`
+        `${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}/questions`
       );
       const data = await res.json();
       setQuestions(data);
@@ -51,7 +51,7 @@ export default function QuizEditorPage() {
 
     const { publish = false, goToList = false } = options;
 
-    await fetch(`http://localhost:4000/api/quizzes/${qid}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -89,13 +89,13 @@ export default function QuizEditorPage() {
     const exists = questions.find((q) => q._id === updated._id);
 
     if (exists) {
-      await fetch(`http://localhost:4000/api/questions/${updated._id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/questions/${updated._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updated),
       });
     } else {
-      await fetch(`http://localhost:4000/api/quizzes/${qid}/questions`, {
+      await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}/questions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updated),
@@ -103,7 +103,7 @@ export default function QuizEditorPage() {
     }
 
     const refreshed = await fetch(
-      `http://localhost:4000/api/quizzes/${qid}/questions`
+      `${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}/questions`
     ).then((r) => r.json());
 
     setQuestions(refreshed);
@@ -113,7 +113,7 @@ export default function QuizEditorPage() {
   }
 
   async function deleteQuestion(id: string) {
-    await fetch(`http://localhost:4000/api/questions/${id}`, {
+    await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/questions/${id}`, {
       method: "DELETE",
     });
 

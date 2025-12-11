@@ -18,11 +18,11 @@ export default function QuizDetailsPage({ params }) {
 
   useEffect(() => {
     async function load() {
-      const q = await fetch(`http://localhost:4000/api/quizzes/${qid}`).then((r) =>
+      const q = await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}`).then((r) =>
         r.json()
       );
       const qs = await fetch(
-        `http://localhost:4000/api/quizzes/${qid}/questions`
+        `${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}/questions`
       ).then((r) => r.json());
       setQuiz(q);
       setQuestions(qs);
@@ -36,7 +36,7 @@ export default function QuizDetailsPage({ params }) {
 
   async function handleDone() {
     if (user?.role === "FACULTY" || user?.role === "ADMIN") {
-      await fetch(`http://localhost:4000/api/quizzes/${qid}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ published: true }),

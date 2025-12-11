@@ -29,10 +29,10 @@ export default function QuizPreviewPage() {
 
   useEffect(() => {
     async function load() {
-      const quizRes = await fetch(`http://localhost:4000/api/quizzes/${qid}`);
+      const quizRes = await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}`);
       const quizData = await quizRes.json();
 
-      const qsRes = await fetch(`http://localhost:4000/api/quizzes/${qid}/questions`);
+      const qsRes = await fetch(`${process.env.NEXT_PUBLIC_HTTP_SERVER}/api/quizzes/${qid}/questions`);
       const qsData = await qsRes.json();
 
       setQuiz(quizData);
